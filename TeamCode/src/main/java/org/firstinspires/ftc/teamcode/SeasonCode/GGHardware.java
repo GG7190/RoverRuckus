@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 
 
 public class GGHardware {
@@ -20,14 +20,17 @@ public class GGHardware {
     DistanceSensor sensorDistance;
 
     /* Local OP Mode Members*/
-    HardwareMap hwMap  = null;
+    public HardwareMap hardwareMap  = null;
     public LinearOpMode BaseOpMode = null;
     private ElapsedTime runtime = new ElapsedTime();
 
-    public DcMotor frontLeft, frontRight, backLeft, backRight;
+    public DcMotor frontLeft, frontRight, backLeft, backRight, verticalLift;
+    public Servo dumper;
+    public DigitalChannel digitalTouch;
+    //public DistanceSensor distanceSensor;
     public final double deadZone = 0.3;
     public float FRPower, FLPower, BRPower, BLPower;
-    public double averageEncoderValue;
+    public double averageEncoderValue,currentDistance;
     public boolean reachedTargetPosition;
 
 
@@ -36,15 +39,21 @@ public class GGHardware {
 
     }
 
-    public void init(HardwareMap ahwMap)
+    public void init(GGParameters parameters)
     {
 
-        hwMap = ahwMap;
+        hardwareMap = parameters.BaseOpMode.hardwareMap;
+        _parameters = parameters;
+        BaseOpMode = parameters.BaseOpMode;
         //Four wheels
-        frontLeft = hwMap.get(DcMotor.class, "fl");
-        frontRight = hwMap.get(DcMotor.class, "fr");
-        backLeft = hwMap.get(DcMotor.class, "bl");
-        backRight = hwMap.get(DcMotor.class, "br");
+        frontLeft = hardwareMap.get(DcMotor.class, "fl");
+        frontRight = hardwareMap.get(DcMotor.class, "fr");
+        backLeft = hardwareMap.get(DcMotor.class, "bl");
+        backRight = hardwareMap.get(DcMotor.class, "br");
+        verticalLift = hardwareMap.get(DcMotor.class, "vl");
+        digitalTouch = hardwareMap.get(DigitalChannel.class, "ts");
+        //distanceSensor = hardwareMap.get(DistanceSensor.class, "ds");
+        dumper = hardwareMap.get(Servo.class, "dump");
 
         //frontRight.setDirection(DcMotor.Direction.REVERSE);
 
@@ -69,18 +78,19 @@ public class GGHardware {
         backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        verticalLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         backLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
+        verticalLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
 
     public double convertInchesToPulses(double inches)
     {
-        final int PPR = 562;
+        final int PPR = 750;
         final int largeWheelDiameter = 4;
         double ppi = (int) (PPR / (largeWheelDiameter * Math.PI));
         ppi = (ppi * inches);
@@ -90,17 +100,17 @@ public class GGHardware {
     public void forwBackw(double speed)
     {
         frontRight.setPower(speed);
-        frontLeft.setPower(speed);
+        frontLeft.setPower(-speed);
         backRight.setPower(speed);
-        backLeft.setPower(speed);
+        backLeft.setPower(-speed);
     }
 
     public void driftRight()
     {
-        frontRight.setPower(1);
-        frontLeft.setPower(-1);
-        backRight.setPower(-1);
-        backLeft.setPower(1);
+        frontRight.setPower(-1);
+        frontLeft.setPower(1);
+        backRight.setPower(1);
+        backLeft.setPower(-1);
     }
     /*
      * Robot drifts to the left at a speed of 1.0
@@ -109,23 +119,23 @@ public class GGHardware {
 
     public void driftLeft()
     {
-        frontRight.setPower(-1);
-        frontLeft.setPower(1);
-        backRight.setPower(1);
-        backLeft.setPower(-1);
+        frontRight.setPower(1);
+        frontLeft.setPower(-1);
+        backRight.setPower(-1);
+        backLeft.setPower(1);
     }
     /*
      * Robot turns to the right at a speed of 1.0
      */
-    public void turnRight()
+    public void spinRight()
     {
-        frontRight.setPower(1);
-        frontLeft.setPower(-1);
-        backRight.setPower(1);
-        backLeft.setPower(-1);
+        frontRight.setPower(-1);
+        frontLeft.setPower(1);
+        backRight.setPower(-1);
+        backLeft.setPower(1);
     }
 
-    public void turnLeft()
+    public void spinLeft()
     {
         frontRight.setPower(1);
         frontLeft.setPower(-1);
@@ -148,27 +158,27 @@ public class GGHardware {
             runtime.reset();
             if (direction == "forward")
             {
-                forwBackw(-speed);
+                forwBackw(speed);
             }
             else if (direction == "backward")
             {
-                forwBackw(speed);
+                forwBackw(-speed);
             }
-            else if (direction == "straifR")
-            {
-                turnRight();
-            }
-            else if (direction == "straifL")
-            {
-                turnLeft();
-            }
-            else if (direction == "spinR")
+            else if (direction == "driftR")
             {
                 driftRight();
             }
-            else
+            else if (direction == "driftL")
             {
                 driftLeft();
+            }
+            else if (direction == "spinR")
+            {
+                spinRight();
+            }
+            else
+            {
+                spinLeft();
             }
 
 
