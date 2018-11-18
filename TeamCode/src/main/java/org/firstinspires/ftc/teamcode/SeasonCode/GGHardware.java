@@ -9,6 +9,10 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+
 
 public class GGHardware {
 
@@ -24,14 +28,20 @@ public class GGHardware {
     public LinearOpMode BaseOpMode = null;
     private ElapsedTime runtime = new ElapsedTime();
 
-    public DcMotor frontLeft, frontRight, backLeft, backRight, verticalLift;
-    public Servo dumper;
+    public DcMotor frontLeft, frontRight, backLeft, backRight, verticalLift,collector, hangLift;
+    public Servo dumper, marker, tension;
     public DigitalChannel digitalTouch;
     //public DistanceSensor distanceSensor;
     public final double deadZone = 0.3;
     public float FRPower, FLPower, BRPower, BLPower;
     public double averageEncoderValue,currentDistance;
     public boolean reachedTargetPosition;
+    public VuforiaLocalizer vuforia;
+    public TFObjectDetector tfod;
+    public final String VUFORIA_KEY = " AelWwd//////AAAAGQDnHa68TEwbisDdlvJmnylYK2LsElZD9aL1bZpHc317BsOaJFu+XfN336gDBGhS+K1tbBSgoRSbghMFHhYrhwLv7QAm+cSJ1QdV/sWH4/j59cSO0Pc8XV0/TgSazwzWu3PZ+jJnas3IBOcFoI/s9GCDVUTM0GdIr1toNadpNn/MVGjFzD/unzP1A5OSlQpn3/hS33JyaLlWghEYjPoTV3qPI8mNhKry/pnPJm80Mu0a6V0kQBKKW8fSaApkYfzOtgCjCyGGDuYKAN7W/teQVcYuQHRsTzfW6i9YxfxvPwCnUu8/fVNDDppDjOyGjTPWIebISx9yJ1LvHYfHkvTvKXcW587pSW/aiDqThJH3HVh5";
+    public final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";
+    public final String LABEL_GOLD_MINERAL = "Gold Mineral";
+    public final String LABEL_SILVER_MINERAL = "Silver Mineral";
 
 
     public GGHardware()
@@ -45,15 +55,23 @@ public class GGHardware {
         hardwareMap = parameters.BaseOpMode.hardwareMap;
         _parameters = parameters;
         BaseOpMode = parameters.BaseOpMode;
+
         //Four wheels
         frontLeft = hardwareMap.get(DcMotor.class, "fl");
         frontRight = hardwareMap.get(DcMotor.class, "fr");
         backLeft = hardwareMap.get(DcMotor.class, "bl");
         backRight = hardwareMap.get(DcMotor.class, "br");
         verticalLift = hardwareMap.get(DcMotor.class, "vl");
+        //hortizontalL = hardwareMap.get(DcMotor.class, "hl");
+        //hortizontalR = hardwareMap.get(DcMotor.class, "hr");
+        hangLift = hardwareMap.get(DcMotor.class, "hl");
         digitalTouch = hardwareMap.get(DigitalChannel.class, "ts");
         //distanceSensor = hardwareMap.get(DistanceSensor.class, "ds");
-        dumper = hardwareMap.get(Servo.class, "dump");
+        dumper = hardwareMap.get(Servo.class, "dp");
+        marker = hardwareMap.get(Servo.class, "mk");
+        tension = hardwareMap.get(Servo.class, "tn");
+        collector = hardwareMap.get(DcMotor.class, "cl");
+
 
         //frontRight.setDirection(DcMotor.Direction.REVERSE);
 
@@ -108,21 +126,21 @@ public class GGHardware {
     public void driftRight()
     {
         frontRight.setPower(-1);
-        frontLeft.setPower(1);
+        frontLeft.setPower(-1);
         backRight.setPower(1);
-        backLeft.setPower(-1);
+        backLeft.setPower(1);
     }
     /*
      * Robot drifts to the left at a speed of 1.0
      *
      */
 
-    public void driftLeft()
+    public void driftLeft(double speed)
     {
-        frontRight.setPower(1);
-        frontLeft.setPower(-1);
-        backRight.setPower(-1);
-        backLeft.setPower(1);
+        frontRight.setPower(speed);
+        frontLeft.setPower(speed);
+        backRight.setPower(-speed);
+        backLeft.setPower(-speed);
     }
     /*
      * Robot turns to the right at a speed of 1.0
@@ -130,20 +148,28 @@ public class GGHardware {
     public void spinRight()
     {
         frontRight.setPower(-1);
-        frontLeft.setPower(1);
+        frontLeft.setPower(-1);
         backRight.setPower(-1);
-        backLeft.setPower(1);
+        backLeft.setPower(-1);
     }
 
     public void spinLeft()
     {
         frontRight.setPower(1);
-        frontLeft.setPower(-1);
+        frontLeft.setPower(1);
         backRight.setPower(1);
-        backLeft.setPower(-1);
+        backLeft.setPower(1);
     }
 
+    public void collectSlow()
+    {
+        collector.setPower(.25);
+    }
 
+    public void collectFast()
+    {
+        collector.setPower(1);
+    }
 
     public void DriveMotorUsingEncoder(double speed, double targetDistance, double timeoutSeconds, String direction) {
         // Ensure that the opmode is still active
@@ -170,7 +196,7 @@ public class GGHardware {
             }
             else if (direction == "driftL")
             {
-                driftLeft();
+                driftLeft(speed);
             }
             else if (direction == "spinR")
             {
@@ -193,8 +219,8 @@ public class GGHardware {
                             getEncoderValues() < targetDistance)
             {
                 // Display it for the driver.
-                _parameters.BaseOpMode.telemetry.addData("Path1", "Running to %7d :%7d", targetDistance, getEncoderValues());
-                _parameters.BaseOpMode.telemetry.update();
+                //_parameters.BaseOpMode.telemetry.addData("Path1", "Running to %7d :%7d", targetDistance, getEncoderValues());
+                //_parameters.BaseOpMode.telemetry.update();
             }
 
             // Stop all motion;
@@ -205,4 +231,34 @@ public class GGHardware {
     }
 
 
+
+    void initVuforia() {
+        /*
+         * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
+         */
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
+
+        parameters.vuforiaLicenseKey = VUFORIA_KEY;
+        parameters.cameraDirection = VuforiaLocalizer.CameraDirection.FRONT;
+
+        //  Instantiate the Vuforia engine
+        vuforia = ClassFactory.getInstance().createVuforia(parameters);
+
+        // Loading trackables is not necessary for the Tensor Flow Object Detection engine.
+    }
+
+    /**
+     * Initialize the Tensor Flow Object Detection engine.
+     */
+    void initTfod() {
+        int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
+                "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
+        tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
+        tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_GOLD_MINERAL, LABEL_SILVER_MINERAL);
+    }
 }
+
+
+
+

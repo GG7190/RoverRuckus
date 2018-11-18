@@ -16,15 +16,12 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.Came
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 
-@Autonomous(name = "AutoLand", group = "Autonomous")
-public class AutoLand extends LinearOpMode {
+@Autonomous(name = "bothMinerals", group = "Autonomous")
+public class BothMinerals extends LinearOpMode {
 
 
     GGHardware robot = new GGHardware();
     @Override
-
-
-
 
 
 

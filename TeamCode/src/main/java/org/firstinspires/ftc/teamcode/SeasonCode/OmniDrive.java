@@ -27,8 +27,10 @@ import org.firstinspires.ftc.teamcode.SeasonCode.GGHardware;
             waitForStart();
 
             //initialize servo after start is pressed
-            robot.dumper.setPosition(0.12);
+            robot.dumper.setPosition(0.09);
+            robot.tension.setPosition(0.00);
             boolean liftIsMovingUp = false;
+            boolean liftIsUp = false;
             boolean liftIsMovingDown = false;
             robot.resetAndRunWithoutEncoders();
 
@@ -66,26 +68,14 @@ import org.firstinspires.ftc.teamcode.SeasonCode.GGHardware;
             robot.backLeft.setPower(robot.BLPower);
             robot.backRight.setPower(robot.BRPower);
 
-            //Manual controls for lift
-            /*if(gamepad2.a)
-            {
-                    robot.verticalLift.setPower(1.00);
-            }
-            else if(gamepad2.y)
-            {
-                robot.verticalLift.setPower(-1.0);
-            }
-            else
-            {
-                robot.verticalLift.setPower(-0.07);
-            }*/
 
             //Preset for lift moving up
-            if(gamepad2.dpad_left )
+            if(gamepad2.y )
             {
-                if(!liftIsMovingUp && robot.verticalLift.getCurrentPosition() > -4100)
+                if(!liftIsMovingUp && !liftIsUp && robot.verticalLift.getCurrentPosition() > -4100)
                 {
                     robot.verticalLift.setPower(-1.00);
+                    robot.tension.setPosition(1.00);
                     liftIsMovingUp = true;
                 }
             }
@@ -93,10 +83,56 @@ import org.firstinspires.ftc.teamcode.SeasonCode.GGHardware;
             {
                robot.verticalLift.setPower(-0.07);
                liftIsMovingUp = false;
+               liftIsUp = true;
             }
 
+
+            if(gamepad2.a)
+            {
+                if(liftIsUp && !liftIsMovingUp)
+                {
+                        robot.verticalLift.setPower(1.00);
+                        robot.dumper.setPosition(0.09);
+                        robot.tension.setPosition(0.00);
+                }
+            }
+            else if(!gamepad2.a && !liftIsMovingUp)
+            {
+                robot.verticalLift.setPower(-0.07);
+            }
+
+            else
+            {
+
+            }
+
+            if (!robot.digitalTouch.getState())
+            {
+                liftIsUp = false;
+            }
+
+
+
+
+
+            /*if(gamepad2.a)
+            {
+                robot.verticalLift.setPower(1.00);
+            }
+            else if ((!gamepad2.a && liftIsMovingUp ==  false) || !robot.digitalTouch.getState() )
+            {
+                robot.verticalLift.setPower(-0.07);
+                robot.resetAndRunWithoutEncoders();
+            }
+            else
+            {
+
+            } */
+
+
+
             //Preset for lift moving down
-            if(gamepad2.dpad_right)
+            /*if(gamepad2.a)
             {
                 if(!liftIsMovingDown && robot.digitalTouch.getState())
                 {
@@ -104,43 +140,79 @@ import org.firstinspires.ftc.teamcode.SeasonCode.GGHardware;
                     liftIsMovingDown = true;
                 }
             }
+            /*if(robot.verticalLift.getCurrentPosition() > 100)
+            {
+
+            }
             if(!robot.digitalTouch.getState() && liftIsMovingDown == true)
             {
                 robot.verticalLift.setPower(-0.07);
                 liftIsMovingDown = false;
                 robot.resetAndRunWithoutEncoders();
-            }
+            }*/
 
             //Move dumper up
-            if(gamepad2.dpad_up)
+            if(gamepad2.b)
             {
                 robot.dumper.setPosition(0.70);
             }
 
             //Move dumper down
-            else if(gamepad2.dpad_down)
+            else if(gamepad2.x)
             {
-                robot.dumper.setPosition(0.12);
+                robot.dumper.setPosition(0.09);
             }
             else
             {
 
             }
 
-            /*if(gamepad2.y)
+            //run 256:1 motor to latch and deploy robot from lander
+            if(gamepad2.dpad_up)
             {
-                while(robot.distanceSensor.getDistance(DistanceUnit.INCH )< 14.25)
-                {
-                    robot.verticalLift.setPower(-0.5);
-                }
-                robot.verticalLift.setPower(0.0);
-            }*/
-
-
+                robot.hangLift.setPower(1.00);
+                robot.tension.setPosition(1.00);
+            }
+            else if(gamepad2.dpad_down)
+            {
+                robot.hangLift.setPower(-1.00);
+            }
+            else
+            {
+                robot.hangLift.setPower(0.00);
             }
 
 
+            //Move horizontal lift out and in
+            /*if(gamepad2.b)
+            {
+                robot.hortizontalR.setPower(1.00);
+            }
+            else if(gamepad2.x)
+            {
+                robot.hortizontalL.setPower(1.00);;
+            }
+            else
+            {
+                robot.hortizontalL.setPower(-0.05);
+                robot.hortizontalR.setPower(0.05);
+            }*/
 
+            //Spin Collector
+                if(gamepad2.right_trigger > 0.05)
+                {
+                    robot.collector.setPower(-gamepad2.right_trigger);
+                }
+
+                else if(gamepad2.left_trigger > 0.05)
+                {
+                    robot.collector.setPower(gamepad2.left_trigger);
+                }
+                else
+                {
+                    robot.collector.setPower(0);
+                }
+            }
         }
         public void getJoyVals ()
         {
@@ -161,5 +233,8 @@ import org.firstinspires.ftc.teamcode.SeasonCode.GGHardware;
                 robot.BLPower = 0;
             }
         }
+
+
+
 
     }
