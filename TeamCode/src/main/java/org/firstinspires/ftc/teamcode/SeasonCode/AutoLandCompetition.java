@@ -35,7 +35,7 @@ public class AutoLandCompetition extends LinearOpMode {
         robot.initTfod();
         robot.forwBackw(0.00);
         robot.tension.setPosition(1.00);
-        robot.marker.setPosition(1.00);
+
         if (robot.tfod != null)
         {
             robot.tfod.activate();
@@ -51,6 +51,7 @@ public class AutoLandCompetition extends LinearOpMode {
 
         while (opModeIsActive()) {
 
+            robot.marker.setPosition(0.50);
 
 
             String position = findGoldMineral();
@@ -159,14 +160,14 @@ public class AutoLandCompetition extends LinearOpMode {
             robot.DriveMotorUsingEncoder(0.25, 25, 10, "forward");
             sleep(2000);
             robot.collector.setPower(0.00);
-            robot.DriveMotorUsingEncoder(0.25, 9, 10, "backward");
+            robot.DriveMotorUsingEncoder(0.25, 5, 10, "backward");
             //Drive Forward to left mineral
-            robot.DriveMotorUsingEncoder(0.25, 40, 10, "driftL");
-            robot.DriveMotorUsingEncoder(0.5, 72, 10, "driftL");
+            //robot.DriveMotorUsingEncoder(0.25, 40, 10, "driftL");
+            robot.DriveMotorUsingEncoder(1.0, 72, 10, "driftL");
             robot.DriveMotorUsingEncoder(0.25,5, 10, "spinR" );
-            robot.DriveMotorUsingEncoder(1.00, 30,10,"backward");
-            robot.marker.setPosition(0.00);
-            robot.DriveMotorUsingEncoder(1.00, 75, 10, "forward");
+            robot.DriveMotorUsingEncoder(0.5, 30,10,"backward");
+            robot.marker.setPosition(1.00);
+            //robot.DriveMotorUsingEncoder(1.00, 75, 10, "forward");
 
 }
 
@@ -180,12 +181,12 @@ public class AutoLandCompetition extends LinearOpMode {
             robot.DriveMotorUsingEncoder(0.25, 32, 10, "forward");
             sleep(2000);
             robot.collector.setPower(0.00);
-            robot.DriveMotorUsingEncoder(0.25, 19, 10, "backward");
-            robot.DriveMotorUsingEncoder(0.5, 72, 10, "driftL");
-            robot.DriveMotorUsingEncoder(0.25,5, 10, "spinR" );
-            robot.DriveMotorUsingEncoder(1.00, 30,10,"backward");
-            robot.marker.setPosition(0.00);
-            robot.DriveMotorUsingEncoder(1.00, 75, 10, "forward");
+            robot.DriveMotorUsingEncoder(0.25, 22, 10, "backward");
+            robot.DriveMotorUsingEncoder(0.5,72, 10, "driftL");
+            robot.DriveMotorUsingEncoder(0.25,2, 10, "spinR" );
+            robot.DriveMotorUsingEncoder(0.5, 30,10,"backward");
+            robot.marker.setPosition(1.00);
+            //robot.DriveMotorUsingEncoder(1.00, 75, 10, "forward");
 
         }
 
@@ -200,11 +201,11 @@ public class AutoLandCompetition extends LinearOpMode {
             robot.DriveMotorUsingEncoder(0.25, 15, 10, "backward");
             // spin left toward saftey zone
             robot.DriveMotorUsingEncoder(0.25, 4, 10, "spinR");
-            robot.DriveMotorUsingEncoder(0.25, 50, 10, "driftL");
+            robot.DriveMotorUsingEncoder(0.5, 50, 10, "driftL");
             robot.DriveMotorUsingEncoder(0.25,5, 10, "spinR" );
             robot.DriveMotorUsingEncoder(1.00, 30,10,"backward");
-            robot.marker.setPosition(0.00);
-            robot.DriveMotorUsingEncoder(1.00, 75, 10, "forward");
+            robot.marker.setPosition(1.00);
+            //robot.DriveMotorUsingEncoder(1.00, 75, 10, "forward");
         }
 
         public void dumpMarker ()

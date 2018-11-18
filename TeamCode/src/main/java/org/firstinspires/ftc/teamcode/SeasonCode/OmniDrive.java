@@ -92,7 +92,6 @@ import org.firstinspires.ftc.teamcode.SeasonCode.GGHardware;
                 if(liftIsUp && !liftIsMovingUp)
                 {
                         robot.verticalLift.setPower(1.00);
-                        robot.dumper.setPosition(0.09);
                         robot.tension.setPosition(0.00);
                 }
             }
