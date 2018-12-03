@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.SeasonCode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -12,6 +13,7 @@ import org.firstinspires.ftc.teamcode.SeasonCode.GGHardware;
 
 
 @TeleOp(name="OmniDrive",group="TeleOp")
+
     public class OmniDrive extends LinearOpMode
     {
         GGHardware robot = new GGHardware();
@@ -28,10 +30,7 @@ import org.firstinspires.ftc.teamcode.SeasonCode.GGHardware;
 
             //initialize servo after start is pressed
             robot.dumper.setPosition(0.09);
-            robot.tension.setPosition(0.00);
-            boolean liftIsMovingUp = false;
-            boolean liftIsUp = false;
-            boolean liftIsMovingDown = false;
+
             robot.resetAndRunWithoutEncoders();
 
             while (opModeIsActive()) {
@@ -43,13 +42,15 @@ import org.firstinspires.ftc.teamcode.SeasonCode.GGHardware;
             telemetry.update();
 
             //Reset encoder values by pressing the y button on gamepad 1
-            if(gamepad1.y)
+            /*if(gamepad1.y)
             {
+                robot.verticalLift.setPower(1.00);
+
                 robot.averageEncoderValue = 0;
                 robot.resetAndRunWithoutEncoders();
                 telemetry.addData("Encoder pulses: ", robot.averageEncoderValue);
                 telemetry.update();
-            }
+            }*/
 
             //recieve joystick values from controllers
             getJoyVals();
@@ -72,83 +73,29 @@ import org.firstinspires.ftc.teamcode.SeasonCode.GGHardware;
             //Preset for lift moving up
             if(gamepad2.y )
             {
-                if(!liftIsMovingUp && !liftIsUp && robot.verticalLift.getCurrentPosition() > -4100)
-                {
-                    robot.verticalLift.setPower(-1.00);
-                    robot.tension.setPosition(1.00);
-                    liftIsMovingUp = true;
-                }
-            }
-            if(robot.verticalLift.getCurrentPosition() <  -4100 && liftIsMovingUp == true)
-            {
-               robot.verticalLift.setPower(-0.07);
-               liftIsMovingUp = false;
-               liftIsUp = true;
+                robot.liftUp();
             }
 
+            if(robot.verticalLift.getCurrentPosition() <  -4100 && robot.liftIsMovingUp == true)
+            {
+                robot.stopLift();
+            }
 
             if(gamepad2.a)
             {
-                if(liftIsUp && !liftIsMovingUp)
-                {
-                        robot.verticalLift.setPower(1.00);
-                        robot.tension.setPosition(0.00);
-                }
-            }
-            else if(!gamepad2.a && !liftIsMovingUp)
-            {
-                robot.verticalLift.setPower(-0.07);
+                robot.liftDown();
             }
 
-            else
+            else if(!gamepad2.a && !robot.liftIsMovingUp)
             {
-
+                robot.stopLift();
             }
 
             if (!robot.digitalTouch.getState())
             {
-                liftIsUp = false;
+                robot.liftIsUp = false;
             }
 
-
-
-
-
-            /*if(gamepad2.a)
-            {
-                robot.verticalLift.setPower(1.00);
-            }
-            else if ((!gamepad2.a && liftIsMovingUp ==  false) || !robot.digitalTouch.getState() )
-            {
-                robot.verticalLift.setPower(-0.07);
-                robot.resetAndRunWithoutEncoders();
-            }
-            else
-            {
-
-            } */
-
-
-
-            //Preset for lift moving down
-            /*if(gamepad2.a)
-            {
-                if(!liftIsMovingDown && robot.digitalTouch.getState())
-                {
-                    robot.verticalLift.setPower(1.00);
-                    liftIsMovingDown = true;
-                }
-            }
-            /*if(robot.verticalLift.getCurrentPosition() > 100)
-            {
-
-            }
-            if(!robot.digitalTouch.getState() && liftIsMovingDown == true)
-            {
-                robot.verticalLift.setPower(-0.07);
-                liftIsMovingDown = false;
-                robot.resetAndRunWithoutEncoders();
-            }*/
 
             //Move dumper up
             if(gamepad2.b)
@@ -161,55 +108,31 @@ import org.firstinspires.ftc.teamcode.SeasonCode.GGHardware;
             {
                 robot.dumper.setPosition(0.09);
             }
-            else
-            {
-
-            }
-
-            //run 256:1 motor to latch and deploy robot from lander
-            if(gamepad2.dpad_up)
-            {
-                robot.hangLift.setPower(1.00);
-                robot.tension.setPosition(1.00);
-            }
-            else if(gamepad2.dpad_down)
-            {
-                robot.hangLift.setPower(-1.00);
-            }
-            else
-            {
-                robot.hangLift.setPower(0.00);
-            }
 
 
-            //Move horizontal lift out and in
-            /*if(gamepad2.b)
-            {
-                robot.hortizontalR.setPower(1.00);
-            }
-            else if(gamepad2.x)
-            {
-                robot.hortizontalL.setPower(1.00);;
-            }
-            else
-            {
-                robot.hortizontalL.setPower(-0.05);
-                robot.hortizontalR.setPower(0.05);
-            }*/
 
             //Spin Collector
                 if(gamepad2.right_trigger > 0.05)
                 {
-                    robot.collector.setPower(-gamepad2.right_trigger);
+                    robot.spinCollector(-gamepad2.right_trigger);
                 }
 
                 else if(gamepad2.left_trigger > 0.05)
                 {
-                    robot.collector.setPower(gamepad2.left_trigger);
+                    robot.spinCollector(gamepad2.left_trigger);
                 }
                 else
                 {
-                    robot.collector.setPower(0);
+                    robot.stopCollector();
+                }
+
+                if(gamepad1.x)
+                {
+                    robot.markerUP();
+                }
+                if(gamepad1.b)
+                {
+                    robot.markerDown();
                 }
             }
         }

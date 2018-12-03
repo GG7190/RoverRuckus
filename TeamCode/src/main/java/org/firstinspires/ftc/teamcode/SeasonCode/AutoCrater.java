@@ -7,12 +7,15 @@ import java.util.List;
 
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 
-@Autonomous(name = "bothMinerals", group = "Autonomous")
-public class BothMinerals extends LinearOpMode {
+@Autonomous(name = "AutoCrater", group = "Autonomous")
+public class AutoCrater extends LinearOpMode {
 
 
     GGHardware robot = new GGHardware();
     @Override
+
+
+
 
 
 

@@ -7,8 +7,9 @@ import java.util.List;
 
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 
-@Autonomous(name = "AutoLand", group = "Autonomous")
-public class AutoLand extends LinearOpMode {
+@Autonomous(name = "TestTurn", group = "Autonomous")
+public class TestTurn extends LinearOpMode
+{
 
 
     GGHardware robot = new GGHardware();
@@ -16,7 +17,8 @@ public class AutoLand extends LinearOpMode {
     @Override
 
 
-    public void runOpMode() {
+    public void runOpMode()
+    {
 
         GGParameters ggparameters = new GGParameters(this);
         robot.init(ggparameters);
@@ -29,10 +31,13 @@ public class AutoLand extends LinearOpMode {
         //reset all encoders
         robot.resetAndRunWithoutEncoders();
 
-        while (opModeIsActive()) {
-
-
-
+        while (opModeIsActive())
+        {
+            robot.initializeIMU();
+            robot.Turn(0.25, 90, 5, "spinR");
+            robot.Turn(0.25, 180,5,"spinL");
+            sleep(2000);
+            stop();
         }
     }
 }

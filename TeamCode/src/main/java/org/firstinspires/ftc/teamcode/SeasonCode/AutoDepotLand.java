@@ -1,14 +1,14 @@
 package org.firstinspires.ftc.teamcode.SeasonCode;
 
-        import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-        import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-        import java.util.List;
+import java.util.List;
 
-        import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 
-@Autonomous(name = "AutoLandCompetition", group = "Autonomous")
-public class AutoLandCompetition extends LinearOpMode {
+@Autonomous(name = "AutoDepotLand", group = "Autonomous")
+public class AutoDepotLand extends LinearOpMode {
 
 
     GGHardware robot = new GGHardware();
@@ -56,14 +56,14 @@ public class AutoLandCompetition extends LinearOpMode {
             }
             else if (position == "right")
             {
-               goldMineralRight();
+                goldMineralRight();
             }
             sleep(3000);
             stop();
 
-            }
-
         }
+
+    }
 
 
     public String findGoldMineral() {
@@ -72,7 +72,7 @@ public class AutoLandCompetition extends LinearOpMode {
 
         }
         else
-            {
+        {
             telemetry.addData("# Object Detected", updatedRecognitions.size());
             telemetry.update();
             if (updatedRecognitions.size() < 2) {
@@ -138,66 +138,90 @@ public class AutoLandCompetition extends LinearOpMode {
         return "not found";
     }
 
-        public void goldMineralCenter ()
-        {
-            robot.resetAndRunWithoutEncoders();
+    public void goldMineralCenter ()
+    {
+        robot.resetAndRunWithoutEncoders();
 
-            //turn harvestor toward minerals
-            robot.Drive(0.25, 8, 10, "driftL");
-            robot.Drive(0.25, 16, 20, "spinL");
-            robot.collector.setPower(-1.00);
-            robot.Drive(0.25, 25, 10, "forward");
-            sleep(2000);
-            robot.collector.setPower(0.00);
-            robot.Drive(0.25, 8, 10, "backward");
-            //Drive Forward to left mineral
-            //robot.Drive(0.25, 40, 10, "driftL");
-            robot.Drive(0.5, 55, 10, "driftL");
-            robot.Drive(0.25,3, 10, "spinR" );
-            robot.Drive(0.25, 30,10,"backward");
-            robot.markerDown();
-            //robot.Drive(1.00, 75, 10, "forward");
-
-}
-
-        public void goldMineralRight ()
-        {
-            robot.resetAndRunWithoutEncoders();
-
-            robot.Drive(0.25, 8, 10, "driftL");
-            robot.Drive(0.25, 10, 20, "spinL");
-            robot.collector.setPower(-1.00);
-            robot.Drive(0.25, 32, 10, "forward");
-            sleep(2000);
-            robot.collector.setPower(0.00);
-            robot.Drive(0.25, 22, 10, "backward");
-            robot.Drive(0.5,55, 10, "driftL");
-            robot.Drive(0.25,1.5, 10, "spinR" );
-            robot.Drive(0.25, 35,10,"backward");
-            robot.markerDown();
-            //robot.Drive(1.00, 75, 10, "forward"
-
-        }
-
-        public void goldMineralLeft ()
-        {
-            robot.Drive(0.25, 8, 10, "driftL");
-            robot.Drive(0.25, 26, 20, "spinL");
-            robot.collector.setPower(-1.00);
-            robot.Drive(0.25, 35, 10, "forward");
-            sleep(2000);
-            robot.collector.setPower(0.00);
-            robot.Drive(0.25, 15, 10, "backward");
-            // spin left toward saftey zone
-            robot.Drive(0.25, 4, 10, "spinR");
-            robot.Drive(0.5, 50, 10, "driftL");
-            robot.Drive(0.25,3, 10, "spinR" );
-            robot.Drive(0.25, 30,10,"backward");
-            robot.markerDown();
-            //robot.Drive(1.00, 75, 10, "forward");
-        }
-
-
+        //turn harvestor toward minerals
+        robot.Drive(0.25, 8, 10, "driftL");
+        robot.Drive(0.25, 16, 20, "spinL");
+        robot.collector.setPower(-1.00);
+        robot.Drive(0.25, 25, 10, "forward");
+        sleep(2000);
+        robot.collector.setPower(0.00);
+        //robot.Drive(0.25, 10, 16, "spinR");
+        //robot.Drive(0.25, 10, 10,"backward");
+        /*robot.Drive(0.25, 5, 10, "backward");
+        //Drive Forward to left mineral
+        //robot.Drive(0.25, 40, 10, "driftL");
+        robot.Drive(1.0, 72, 10, "driftL");
+        robot.Drive(0.25,3, 10, "spinR" );
+        robot.Drive(0.25, 30,10,"backward");
+        robot.marker.setPosition(1.00);
+        //robot.Drive(1.00, 75, 10, "forward");*/
 
     }
+
+    public void goldMineralRight ()
+    {
+        robot.resetAndRunWithoutEncoders();
+
+        robot.Drive(0.25, 8, 10, "driftL");
+        robot.Drive(0.25, 10, 20, "spinL");
+        robot.collector.setPower(-1.00);
+        robot.Drive(0.25, 32, 10, "forward");
+        sleep(2000);
+        robot.collector.setPower(0.00);
+        /*robot.Drive(0.25, 22, 10, "backward");
+        robot.Drive(0.5,60, 10, "driftL");
+        robot.Drive(0.25,2, 10, "spinR" );
+        robot.Drive(0.25, 30,10,"backward");
+        robot.marker.setPosition(1.00);
+        //robot.Drive(1.00, 75, 10, "forward"*/
+
+    }
+
+    public void goldMineralLeft ()
+    {
+        robot.Drive(0.25, 8, 10, "driftL");
+        robot.Drive(0.25, 24, 20, "spinL");
+        robot.collector.setPower(-1.00);
+        robot.Drive(0.25, 35, 10, "forward");
+        sleep(2000);
+        robot.collector.setPower(0.00);
+        /*robot.Drive(0.25, 15, 10, "backward");
+        // spin left toward saftey zone
+        robot.Drive(0.25, 4, 10, "spinR");
+        robot.Drive(0.5, 50, 10, "driftL");
+        robot.Drive(0.25,3, 10, "spinR" );
+        robot.Drive(0.25, 30,10,"backward");
+        robot.marker.setPosition(1.00);
+        //robot.Drive(1.00, 75, 10, "forward");*/
+    }
+
+    public void dumpMarker ()
+    {
+        //drive forward toward safe zone
+        robot.Drive(0.25, 12, 10, "forward");
+        //spin to be in line with the zone
+        robot.Drive(0.25, 6, 10, "spin");
+        //drive forward into safety zone
+        robot.Drive(0.25, 12, 10, "forward");
+        //spin so hopper faces safety zone
+        robot.Drive(0.25, 16, 10, "spinR");
+
+
+        //extend harvestor
+        //robot.hortizontalR.setPower(0.25);
+
+
+        sleep(700);
+        //dump marker
+        robot.dumper.setPosition(0.7);
+        sleep(200);
+        //dumper back in starting position
+        robot.dumper.setPosition(0.12);
+        robot.Drive(0.25, 36, 15, "forward");
+    }
+}
 
