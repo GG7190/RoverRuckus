@@ -145,10 +145,10 @@ public class AutoLandCompetition extends LinearOpMode {
             //turn harvestor toward minerals
             robot.Drive(0.25, 8, 10, "driftL");
             robot.Drive(0.25, 16, 20, "spinL");
-            robot.collector.setPower(-1.00);
+           // robot.collector.setPower(-1.00);
             robot.Drive(0.25, 25, 10, "forward");
             sleep(2000);
-            robot.collector.setPower(0.00);
+            //robot.collector.setPower(0.00);
             robot.Drive(0.25, 8, 10, "backward");
             //Drive Forward to left mineral
             //robot.Drive(0.25, 40, 10, "driftL");
@@ -166,10 +166,10 @@ public class AutoLandCompetition extends LinearOpMode {
 
             robot.Drive(0.25, 8, 10, "driftL");
             robot.Drive(0.25, 10, 20, "spinL");
-            robot.collector.setPower(-1.00);
+            //robot.collector.setPower(-1.00);
             robot.Drive(0.25, 32, 10, "forward");
             sleep(2000);
-            robot.collector.setPower(0.00);
+            //robot.collector.setPower(0.00);
             robot.Drive(0.25, 22, 10, "backward");
             robot.Drive(0.5,55, 10, "driftL");
             robot.Drive(0.25,1.5, 10, "spinR" );
@@ -183,10 +183,10 @@ public class AutoLandCompetition extends LinearOpMode {
         {
             robot.Drive(0.25, 8, 10, "driftL");
             robot.Drive(0.25, 26, 20, "spinL");
-            robot.collector.setPower(-1.00);
+            //robot.collector.setPower(-1.00);
             robot.Drive(0.25, 35, 10, "forward");
             sleep(2000);
-            robot.collector.setPower(0.00);
+            //robot.collector.setPower(0.00);
             robot.Drive(0.25, 15, 10, "backward");
             // spin left toward saftey zone
             robot.Drive(0.25, 4, 10, "spinR");

@@ -145,10 +145,10 @@ public class AutoDepotLand extends LinearOpMode {
         //turn harvestor toward minerals
         robot.Drive(0.25, 8, 10, "driftL");
         robot.Drive(0.25, 16, 20, "spinL");
-        robot.collector.setPower(-1.00);
+        //robot.collector.setPower(-1.00);
         robot.Drive(0.25, 25, 10, "forward");
         sleep(2000);
-        robot.collector.setPower(0.00);
+        //robot.collector.setPower(0.00);
         //robot.Drive(0.25, 10, 16, "spinR");
         //robot.Drive(0.25, 10, 10,"backward");
         /*robot.Drive(0.25, 5, 10, "backward");
@@ -168,10 +168,10 @@ public class AutoDepotLand extends LinearOpMode {
 
         robot.Drive(0.25, 8, 10, "driftL");
         robot.Drive(0.25, 10, 20, "spinL");
-        robot.collector.setPower(-1.00);
+        //robot.collector.setPower(-1.00);
         robot.Drive(0.25, 32, 10, "forward");
         sleep(2000);
-        robot.collector.setPower(0.00);
+        //robot.collector.setPower(0.00);
         /*robot.Drive(0.25, 22, 10, "backward");
         robot.Drive(0.5,60, 10, "driftL");
         robot.Drive(0.25,2, 10, "spinR" );
@@ -185,10 +185,10 @@ public class AutoDepotLand extends LinearOpMode {
     {
         robot.Drive(0.25, 8, 10, "driftL");
         robot.Drive(0.25, 24, 20, "spinL");
-        robot.collector.setPower(-1.00);
+        //robot.collector.setPower(-1.00);
         robot.Drive(0.25, 35, 10, "forward");
         sleep(2000);
-        robot.collector.setPower(0.00);
+        //robot.collector.setPower(0.00);
         /*robot.Drive(0.25, 15, 10, "backward");
         // spin left toward saftey zone
         robot.Drive(0.25, 4, 10, "spinR");

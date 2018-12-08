@@ -36,8 +36,8 @@ public class GGHardware {
     public LinearOpMode BaseOpMode = null;
     private ElapsedTime runtime = new ElapsedTime();
 
-    public DcMotor frontLeft, frontRight, backLeft, backRight, verticalLift,collector, hangLift;
-    public Servo dumper, marker, tension;
+    public DcMotor frontLeft, frontRight, backLeft, backRight, verticalLift, hangLift;
+    public Servo dumper, marker, tension,collector;
     public DigitalChannel digitalTouch;
     //public DistanceSensor distanceSensor;
     public final double deadZone = 0.15;
@@ -47,7 +47,7 @@ public class GGHardware {
     boolean liftIsUp = false;
     public VuforiaLocalizer vuforia;
     public TFObjectDetector tfod;
-    public final String VUFORIA_KEY = " AelWwd//////AAAAGQDnHa68TEwbisDdlvJmnylYK2LsElZD9aL1bZpHc317BsOaJFu+XfN336gDBGhS+K1tbBSgoRSbghMFHhYrhwLv7QAm+cSJ1QdV/sWH4/j59cSO0Pc8XV0/TgSazwzWu3PZ+jJnas3IBOcFoI/s9GCDVUTM0GdIr1toNadpNn/MVGjFzD/unzP1A5OSlQpn3/hS33JyaLlWghEYjPoTV3qPI8mNhKry/pnPJm80Mu0a6V0kQBKKW8fSaApkYfzOtgCjCyGGDuYKAN7W/teQVcYuQHRsTzfW6i9YxfxvPwCnUu8/fVNDDppDjOyGjTPWIebISx9yJ1LvHYfHkvTvKXcW587pSW/aiDqThJH3HVh5";
+    public final String VUFORIA_KEY = "AQ2bBhr/////AAABmZ3h5slXFkFNsA2+9NNp7vgLITOJZHq695JcQC+JLV4eNMi5xm9bRVutz//N3w2HmZSHV+VH0sXNGstHLcn+8+RncGp0XNFhhj4xfRLIxpsj+nLydV/LStF4ayEFHhWeW3DCn5HZd+8utzjJXaoGAKnXIQ8w9SOviaPJBA5wXqllQNNowqyLBYMEhchuttTDQsGzw3ckVVbRC8c7q+z6M0lKqRj0CWi4EG6bFtqs96KTjBw2Aq+uemXXEsYcEfGO1lW8fkkya5HQaJJh9GNjy63vXnTmAMTBirPJFjSNb6NQm3Si92Prc/FscOML4lxxaTTwl/7Y96VH6a6FkfD9Ka19NVl61xbKI+Anycnvb+gl";
     public final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";
     public final String LABEL_GOLD_MINERAL = "Gold Mineral";
     public final String LABEL_SILVER_MINERAL = "Silver Mineral";
@@ -74,8 +74,9 @@ public class GGHardware {
         frontRight = hardwareMap.get(DcMotor.class, "fr");
         backLeft = hardwareMap.get(DcMotor.class, "bl");
         backRight = hardwareMap.get(DcMotor.class, "br");
-        verticalLift = hardwareMap.get(DcMotor.class, "vl");
         hangLift = hardwareMap.get(DcMotor.class, "hl");
+        //collector = hardwareMap.get(Servo.class, "cl");
+        marker = hardwareMap.get(Servo.class, "mk");
         digitalTouch = hardwareMap.get(DigitalChannel.class, "ts");
         //distanceSensor = hardwareMap.get(DistanceSensor.class, "ds");
         imu = hardwareMap.get(BNO055IMU.class, "imu");
@@ -120,6 +121,7 @@ public class GGHardware {
         IMUParameters.loggingTag          = "IMU";
         IMUParameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
         imu.initialize(IMUParameters);
+        resetAngle();
 
     }
 
@@ -135,13 +137,13 @@ public class GGHardware {
         backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        verticalLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        hangLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         backLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        verticalLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        hangLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
 
@@ -197,17 +199,25 @@ public class GGHardware {
     //////////////////////////
 
     ////Collector Methods//////////
-    public void spinCollector(double speed)
+    public void spinCollector(String direction)
     {
-        collector.setPower(speed);
+        if(direction == "in")
+        {
+            collector.setPosition(1.00);
+        }
+        else
+        {
+            collector.setPosition(0.00);
+        }
+
     }
 
     public void stopCollector()
     {
-        collector.setPower(0.00);
+        collector.setPosition(0.5);
     }
 
-    public void collectSlow()
+    /*public void collectSlow()
     {
         collector.setPower(.25);
     }
@@ -215,11 +225,11 @@ public class GGHardware {
     public void collectFast()
     {
         collector.setPower(1);
-    }
+    }*/
     //////////////////////////////
 
 
-    ////Marker servo Methods//////
+    ////Marker servo Methods//////x
     public void  markerUP ()
     {
         marker.setPosition(0.00);
@@ -227,17 +237,30 @@ public class GGHardware {
 
     public void markerDown()
     {
-        marker.setPosition(1.00);
+        marker.setPosition(0.80);
     }
     //////////////////////////////
 
     ////Lift Up Preset///////////////
     public void liftUp()
     {
-        if (!liftIsMovingUp && !liftIsUp && hangLift.getCurrentPosition() > -4100) {
+        if(!liftIsUp && hangLift.getCurrentPosition() > -8000)
+        {
             hangLift.setPower(-1.00);
             liftIsMovingUp = true;
+            resetAndRunWithoutEncoders();
         }
+
+    }
+    public void liftUpAuto()
+    {
+      while(hangLift.getCurrentPosition() > -8000)
+      {
+          hangLift.setPower(-1.00);
+          liftIsMovingUp = true;
+
+      }
+      stopLift();
     }
 
     ////Stop Lift////////////////////
@@ -245,25 +268,28 @@ public class GGHardware {
     {
         hangLift.setPower(0.00);
         liftIsMovingUp = false;
-        liftIsUp = true;
+        //liftIsUp = true;
     }
 
     ////Lift Down////////////////////
     public void liftDown()
     {
-        if(liftIsUp && liftIsMovingUp)
+        if (digitalTouch.getState())
         {
             hangLift.setPower(1.00);
+
         }
+
     }
 
+    //Turns specific amount of degrees
     public void Turn(double speed, double degrees, double timeouSeconds, String direction)
     {
         while(true) {
             getIMUValues();
-            _parameters.BaseOpMode.telemetry.addData("Inside Method ", getAngle());
+            _parameters.BaseOpMode.telemetry.addData("Inside Method ", getAbsoluteAngle());
             _parameters.BaseOpMode.telemetry.update();
-            while (getAngle() < degrees)
+            while (getAbsoluteAngle() < degrees)
             {
 
                 if (direction == "spinR")
@@ -281,6 +307,36 @@ public class GGHardware {
         resetAngle();
     }
 
+    //Turns to a specific Euclidean degree
+    public void turnTo(double heading)
+    {
+        double currentAngle = getAngle();
+        double headingMax = heading + 5;
+        double headingMin = heading - 5;
+
+        if(currentAngle < heading)
+        {
+            while(getAngle() < headingMin)
+            {
+                spinLeft(0.25);
+            }
+
+            forwBackw(0.00);
+
+        }
+
+        else
+        {
+            while(getAngle() > headingMax)
+            {
+                spinRight(0.25);
+            }
+
+            forwBackw(0.00);
+        }
+    }
+
+    //Drive specific amount of inches
     public void Drive(double speed, double targetDistance, double timeoutSeconds, String direction) {
         // Ensure that the opmode is still active
         if (_parameters.BaseOpMode.opModeIsActive()) {
@@ -336,7 +392,7 @@ public class GGHardware {
      * Get current cumulative angle rotation from last reset.
      * @return Angle in degrees. + = left, - = right.
      */
-    private double getAngle()
+    private double getAbsoluteAngle()
     {
         // We experimentally determined the Z axis is the axis we want to use for heading angle.
         // We have to process the angle because the imu works in euler angles so the Z axis is
@@ -359,6 +415,32 @@ public class GGHardware {
         return Math.abs(globalAngle);
     }
 
+    //Gets current heading from IMU
+    private double getAngle()
+    {
+        // We experimentally determined the Z axis is the axis we want to use for heading angle.
+        // We have to process the angle because the imu works in euler angles so the Z axis is
+        // returned as 0 to +180 or 0 to -180 rolling back to -179 or +179 when rotation passes
+        // 180 degrees. We detect this transition and track the total cumulative angle of rotation.
+
+        Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+
+        double deltaAngle = angles.firstAngle - lastAngles.firstAngle;
+
+        if (deltaAngle < -180)
+            deltaAngle += 360;
+        else if (deltaAngle > 180)
+            deltaAngle -= 360;
+
+        globalAngle += deltaAngle;
+
+        lastAngles = angles;
+
+        return globalAngle;
+    }
+
+
+
     /**
      * Resets the cumulative angle tracking to zero.
      */
@@ -369,11 +451,9 @@ public class GGHardware {
         globalAngle = 0;
     }
 
-
-    void initVuforia() {
-        /*
-         * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
-         */
+    //Initializes vuforia parameters
+    void initVuforia()
+    {
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
@@ -385,13 +465,11 @@ public class GGHardware {
         //  Instantiate the Vuforia engine
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
 
-        // Loading trackables is not necessary for the Tensor Flow Object Detection engine.
     }
 
-    /**
-     * Initialize the Tensor Flow Object Detection engine.
-     */
-    void initTfod() {
+    //Initialize tensor flow capabilities
+    void initTfod()
+    {
         int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
                 "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
