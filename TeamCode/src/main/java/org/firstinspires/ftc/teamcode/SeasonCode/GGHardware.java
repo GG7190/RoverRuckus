@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.SeasonCode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
@@ -17,6 +18,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
@@ -29,20 +31,22 @@ public class GGHardware {
     public DcMotor motor1 = null;
 
     ColorSensor sensorColor;
-    DistanceSensor sensorDistance;
+    DistanceSensor distanceSensor;
 
     /* Local OP Mode Members*/
     public HardwareMap hardwareMap  = null;
     public LinearOpMode BaseOpMode = null;
     private ElapsedTime runtime = new ElapsedTime();
 
-    public DcMotor frontLeft, frontRight, backLeft, backRight, verticalLift, hangLift;
-    public Servo dumper, marker, tension,collector;
+    public DcMotor frontLeft, frontRight, backLeft, backRight, verticalLift, hangLift, flipper, flipper2;
+    public Servo dumper, marker, tension;
+    public CRServo collector;
     public DigitalChannel digitalTouch;
-    //public DistanceSensor distanceSensor;
+    //public AnalogInput ultra;
+
     public final double deadZone = 0.15;
     public float FRPower, FLPower, BRPower, BLPower;
-    public double averageEncoderValue,currentDistance;
+    public double averageEncoderValue,flipperValue, eValue;
     boolean liftIsMovingUp = false;
     boolean liftIsUp = false;
     public VuforiaLocalizer vuforia;
@@ -51,7 +55,13 @@ public class GGHardware {
     public final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";
     public final String LABEL_GOLD_MINERAL = "Gold Mineral";
     public final String LABEL_SILVER_MINERAL = "Silver Mineral";
+    public int targetHigh, targetLow, target;
+    public double Pk = 0.003;
+    public boolean flipArmIsMovingUp = false;
+    public boolean flipArmIsMovingDown = false;
+    public boolean robotIsMoving = false;
     BNO055IMU imu;
+    //UltrasonicSensor ultra;
     Orientation lastAngles;
     Acceleration gravity;
     double globalAngle, power = .30, correction;
@@ -75,11 +85,14 @@ public class GGHardware {
         backLeft = hardwareMap.get(DcMotor.class, "bl");
         backRight = hardwareMap.get(DcMotor.class, "br");
         hangLift = hardwareMap.get(DcMotor.class, "hl");
-        //collector = hardwareMap.get(Servo.class, "cl");
+        collector = hardwareMap.get(CRServo.class, "clL");
+        flipper = hardwareMap.get(DcMotor.class, "fp");
+        flipper2 = hardwareMap.get(DcMotor.class, "fp2");
         marker = hardwareMap.get(Servo.class, "mk");
         digitalTouch = hardwareMap.get(DigitalChannel.class, "ts");
-        //distanceSensor = hardwareMap.get(DistanceSensor.class, "ds");
+        distanceSensor = hardwareMap.get(DistanceSensor.class, "ds");
         imu = hardwareMap.get(BNO055IMU.class, "imu");
+        //ultra = hardwareMap.get(AnalogInput.class, "us");
 
 
 
@@ -139,11 +152,13 @@ public class GGHardware {
         frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         hangLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
+
         backLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         hangLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
     }
 
 
@@ -203,18 +218,18 @@ public class GGHardware {
     {
         if(direction == "in")
         {
-            collector.setPosition(1.00);
+            collector.setPower(1.00);
         }
         else
         {
-            collector.setPosition(0.00);
+            collector.setPower(-1.00);
         }
 
     }
 
     public void stopCollector()
     {
-        collector.setPosition(0.5);
+        collector.setPower(0.00);
     }
 
     /*public void collectSlow()
@@ -281,6 +296,58 @@ public class GGHardware {
         }
 
     }
+
+    public void flipArm(String direction)
+    {
+        if(direction == "up")
+        {
+            flipArmIsMovingUp = true;
+
+        }
+        else
+        {
+            flipArmIsMovingDown = true;
+        }
+
+    }
+
+    public double determinePower()
+    {
+        flipperValue = flipper.getCurrentPosition();
+        eValue = target - flipperValue;
+        double power = Pk *(eValue);
+
+        if(power >= 1)
+        {
+            return 1;
+        }
+
+        else if(power <= -1)
+        {
+            return -0.;
+        }
+
+        else
+        {
+            return power;
+        }
+
+    }
+
+    public void setTarget(int input)
+    {
+        target = input;
+        targetHigh = input + 10;
+        targetLow = input - 10;
+    }
+
+    public void adjustPowerValue()
+    {
+        flipper.setPower(determinePower());
+        flipper2.setPower(-determinePower());
+    }
+
+
 
     //Turns specific amount of degrees
     public void Turn(double speed, double degrees, double timeouSeconds, String direction)
@@ -385,6 +452,22 @@ public class GGHardware {
             //Reset Encoders
             resetAndRunWithoutEncoders();
         }
+    }
+
+
+
+    public void driveUsingDistanceSensor()
+    {
+        driftLeft(0.4);
+        robotIsMoving = true;
+
+        while(distanceSensor.getDistance(DistanceUnit.INCH) > 7)
+        {
+            _parameters.BaseOpMode.telemetry.addData("distance ", distanceSensor.getDistance(DistanceUnit.INCH) );
+            _parameters.BaseOpMode.telemetry.update();
+        }
+
+        forwBackw(0.00);
     }
 
 

@@ -7,8 +7,8 @@ import java.util.List;
 
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 
-@Autonomous(name = "AutoLand", group = "Autonomous")
-public class AutoLand extends LinearOpMode {
+@Autonomous(name = "AutoCraterLand", group = "Autonomous")
+public class AutoCraterLand extends LinearOpMode {
 
 
     GGHardware robot = new GGHardware();
@@ -52,6 +52,8 @@ public class AutoLand extends LinearOpMode {
             robot.turnTo(0.00);
 
             knockOffMineral(goldMineralLocation);
+
+            alignToWall();
 
 
             stop();
@@ -133,7 +135,7 @@ public class AutoLand extends LinearOpMode {
 
             }
         }
-        return "none";
+        return "center";
     }
 
     public void centerRobot()
@@ -147,17 +149,17 @@ public class AutoLand extends LinearOpMode {
 
     public void goldMineralCenter()
     {
-        robot.Drive(0.25, 40, 8, "forward");
+        robot.Drive(0.25, 17, 8, "forward");
         placeMarker();
-        robot.Drive(0.25, 40, 8, "backward");
+        //robot.Drive(0.25, 40, 8, "backward");
 
     }
 
     public void goldMineralRight()
     {
-        robot.Drive(0.25, 15, 8, "driftR");
-        robot.Drive(0.25, 40,8, "forward" );
-        robot.Turn(0.25,35,3,"spinL");
+        robot.Drive(0.25, 16, 8, "driftR");
+        robot.Drive(0.25, 25,8, "forward" );
+        //robot.Turn(0.25,35,3,"spinL");
         placeMarker();
         /*robot.Drive(0.25, 10, 8, "backward");
         robot.Drive(0.25, 25, 8, "driftL");*/
@@ -166,15 +168,11 @@ public class AutoLand extends LinearOpMode {
 
     public void goldMineralLeft()
     {
-        robot.Drive(0.25, 15, 8, "driftL");
-        robot.Drive(0.25, 40,8, "forward" );
-        robot.Turn(0.25,35,3,"spinR");
-        placeMarker();
-        /*sleep(1000);
-        robot.Turn(0.5,40,3,"spinL");
-        robot.Drive(0.50, 35, 8, "backward");
-        robot.Drive(0.50, 20, 8, "driftR");
-        robot.Drive(0.5, 10,8,"backward");*/
+        robot.Drive(0.25, 17, 8, "driftL");
+        robot.Drive(0.25, 15,8, "forward" );
+        robot.Drive(0.50, 15, 8, "backward");
+        robot.Drive(0.50, 17, 8, "driftR");
+        //robot.Drive(0.5, 10,8,"backward");
     }
 
     public void knockOffMineral(String locationOfGold)
@@ -193,6 +191,14 @@ public class AutoLand extends LinearOpMode {
         }
 
     }
+
+    public void alignToWall()
+    {
+        robot.Drive(0.35,40, 10, "driftL");
+        robot.Turn(0.35,45,3,"spinR");
+        robot.driveUsingDistanceSensor();
+    }
+
 
     public void placeMarker()
     {

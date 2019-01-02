@@ -1,15 +1,11 @@
 package org.firstinspires.ftc.teamcode.SeasonCode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.SeasonCode.GGHardware;
-import org.firstinspires.ftc.teamcode.SeasonCode.GGHardware;
 
 
 @TeleOp(name="CompetitionOp",group="TeleOp")
@@ -30,13 +26,23 @@ import org.firstinspires.ftc.teamcode.SeasonCode.GGHardware;
         //initialize servo after start is pressed
 
         robot.resetAndRunWithoutEncoders();
+        robot.markerUP();
+        robot.flipper.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.flipper.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        //robot.hangLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         while (opModeIsActive()) {
+
+
 
             //print encoder values to driver station
             robot.getEncoderValues();
             telemetry.addData("Encoder pulses: ", robot.averageEncoderValue);
             telemetry.addData("Vertical Lift Pulses", robot.hangLift.getCurrentPosition());
+            telemetry.addData("flipper pulses", robot.flipper.getCurrentPosition());
+            telemetry.addData("Distnace: ", robot.distanceSensor.getDistance(DistanceUnit.INCH));
+            telemetry.addData("Pk value:", robot.Pk);
             telemetry.update();
 
             //Reset encoder values by pressing the y button on gamepad 1
@@ -51,14 +57,15 @@ import org.firstinspires.ftc.teamcode.SeasonCode.GGHardware;
             }*/
 
             //recieve joystick values from controllers
+
             getJoyVals();
 
-            if (gamepad1.y) {
+            /*if (gamepad1.y) {
                 robot.averageEncoderValue = 0;
                 robot.resetAndRunWithoutEncoders();
                 telemetry.addData("Encoder pulses: ", robot.averageEncoderValue);
                 telemetry.update();
-            }
+            }*/
 
             // assign the power values to the motors
             robot.frontRight.setPower(robot.FRPower);
@@ -70,9 +77,8 @@ import org.firstinspires.ftc.teamcode.SeasonCode.GGHardware;
             //Preset for lift moving up
             if (gamepad2.y)
             {
-               // robot.hangLift.setPower(-1.00);
-                //robot.liftIsUp = true;
-                robot.liftUp();
+                    robot.liftUp();
+
             }
 
             if (robot.hangLift.getCurrentPosition() < -8000 && robot.liftIsMovingUp == true)
@@ -90,6 +96,7 @@ import org.firstinspires.ftc.teamcode.SeasonCode.GGHardware;
             else if (!gamepad2.a && !robot.liftIsMovingUp)
             {
                 robot.stopLift();
+
             }
 
             if (!robot.digitalTouch.getState())
@@ -97,6 +104,65 @@ import org.firstinspires.ftc.teamcode.SeasonCode.GGHardware;
                 robot.liftIsUp = false;
                 robot.resetAndRunWithoutEncoders();
             }
+
+            if(gamepad2.right_bumper)
+            {
+
+                robot.hangLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            }
+
+            if(gamepad2.left_bumper)
+            {
+                robot.hangLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            }
+
+            if(gamepad2.dpad_up)
+            {
+                robot.setTarget(1200);
+                robot.flipArm("up");
+            }
+
+            if(gamepad2.dpad_down)
+            {
+                robot.setTarget(0);
+                robot.flipArm("down");
+                robot.flipArmIsMovingDown = true;
+            }
+
+            if(robot.flipArmIsMovingUp || robot.flipArmIsMovingDown)
+            {
+                robot.adjustPowerValue();
+            }
+
+            if(robot.flipper.getCurrentPosition() >  robot.target && robot.flipArmIsMovingUp)
+            {
+                robot.flipper.setPower(-0.05);
+                robot.flipper2.setPower(0.05);
+                robot.flipArmIsMovingUp = false;
+            }
+
+            if(robot.flipper.getCurrentPosition() < robot.target && robot.flipArmIsMovingDown)
+            {
+                robot.flipper.setPower(0.00);
+                robot.flipper2.setPower(0.00);
+                robot.flipArmIsMovingDown = false;
+            }
+
+            /*if(gamepad2.x)
+            {
+                robot.Pk = robot.Pk + 0.0005;
+            }
+
+            if(gamepad2.b)
+            {
+                robot.Pk = robot.Pk -0.0005;
+            }*/
+
+
+
+
+
+
 
 
             //Spin Collector
@@ -123,6 +189,24 @@ import org.firstinspires.ftc.teamcode.SeasonCode.GGHardware;
                     robot.markerDown();
                 }
             }*/
+
+            /*if(gamepad2.dpad_up)
+             {
+                 robot.flipper.setPower(0.45);
+                 robot.flipper2.setPower(-0.45);
+             }
+             else if(gamepad2.dpad_down)
+             {
+                 robot.flipper.setPower(-0.30);
+                 robot.flipper2.setPower(0.30);
+             }
+             else
+             {
+                 robot.flipper.setPower(0.00);
+                 robot.flipper2.setPower(0.00);
+
+
+             }*/
         }
     }
 
