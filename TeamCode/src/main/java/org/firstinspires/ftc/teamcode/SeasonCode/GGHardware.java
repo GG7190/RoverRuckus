@@ -39,7 +39,7 @@ public class GGHardware {
     private ElapsedTime runtime = new ElapsedTime();
 
     public DcMotor frontLeft, frontRight, backLeft, backRight, verticalLift, hangLift, flipper, flipper2;
-    public Servo dumper, marker, tension;
+    public Servo dumper, marker, wrist;
     public CRServo collector;
     public DigitalChannel digitalTouch;
     //public AnalogInput ultra;
@@ -60,6 +60,7 @@ public class GGHardware {
     public boolean flipArmIsMovingUp = false;
     public boolean flipArmIsMovingDown = false;
     public boolean robotIsMoving = false;
+    public boolean flipArmIsUp = false;
     BNO055IMU imu;
     //UltrasonicSensor ultra;
     Orientation lastAngles;
@@ -84,11 +85,18 @@ public class GGHardware {
         frontRight = hardwareMap.get(DcMotor.class, "fr");
         backLeft = hardwareMap.get(DcMotor.class, "bl");
         backRight = hardwareMap.get(DcMotor.class, "br");
+
+        //Other DC Motors
         hangLift = hardwareMap.get(DcMotor.class, "hl");
-        collector = hardwareMap.get(CRServo.class, "clL");
         flipper = hardwareMap.get(DcMotor.class, "fp");
         flipper2 = hardwareMap.get(DcMotor.class, "fp2");
+
+        //Servos
         marker = hardwareMap.get(Servo.class, "mk");
+        collector = hardwareMap.get(CRServo.class, "clL");
+        wrist = hardwareMap.get(Servo.class, "wr");
+
+        //Sensors
         digitalTouch = hardwareMap.get(DigitalChannel.class, "ts");
         distanceSensor = hardwareMap.get(DistanceSensor.class, "ds");
         imu = hardwareMap.get(BNO055IMU.class, "imu");
@@ -218,11 +226,11 @@ public class GGHardware {
     {
         if(direction == "in")
         {
-            collector.setPower(1.00);
+            collector.setPower(-.70);
         }
         else
         {
-            collector.setPower(-1.00);
+            collector.setPower(0.70);
         }
 
     }
@@ -232,17 +240,18 @@ public class GGHardware {
         collector.setPower(0.00);
     }
 
-    /*public void collectSlow()
+    public void setWristAutomatic(String position)
     {
-        collector.setPower(.25);
+        if(position == "up")
+        {
+            wrist.setPosition(0.20);
+        }
+
+        else
+        {
+            wrist.setPosition(0.75);
+        }
     }
-
-    public void collectFast()
-    {
-        collector.setPower(1);
-    }*/
-    //////////////////////////////
-
 
     ////Marker servo Methods//////x
     public void  markerUP ()
@@ -324,7 +333,7 @@ public class GGHardware {
 
         else if(power <= -1)
         {
-            return -0.;
+            return -0.5;
         }
 
         else

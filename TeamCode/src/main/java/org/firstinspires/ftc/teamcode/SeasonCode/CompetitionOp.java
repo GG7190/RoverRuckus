@@ -75,7 +75,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 
             //Preset for lift moving up
-            if (gamepad2.y)
+            if (gamepad2.dpad_up)
             {
                     robot.liftUp();
 
@@ -88,12 +88,12 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
                 robot.resetAndRunWithoutEncoders();
             }
 
-            if (gamepad2.a)
+            if (gamepad2.dpad_down)
             {
                 robot.liftDown();
             }
 
-            else if (!gamepad2.a && !robot.liftIsMovingUp)
+            else if (!gamepad2.dpad_down && !robot.liftIsMovingUp)
             {
                 robot.stopLift();
 
@@ -116,17 +116,39 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
                 robot.hangLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
             }
 
-            if(gamepad2.dpad_up)
+            if(gamepad2.y)
             {
                 robot.setTarget(1200);
                 robot.flipArm("up");
             }
 
-            if(gamepad2.dpad_down)
+            if(gamepad2.a)
             {
                 robot.setTarget(0);
                 robot.flipArm("down");
-                robot.flipArmIsMovingDown = true;
+            }
+
+            if(gamepad2.b)
+            {
+                robot.setTarget(300);
+
+               if(robot.flipArmIsUp == true)
+               {
+                   robot.flipArm("down");
+               }
+               else
+               {
+                   robot.flipArm("up");
+               }
+            }
+
+            if(robot.flipper.getCurrentPosition() > 300)
+            {
+                robot.flipArmIsUp = true;
+            }
+            if(robot.flipper.getCurrentPosition() < 300)
+            {
+                robot.flipArmIsUp = false;
             }
 
             if(robot.flipArmIsMovingUp || robot.flipArmIsMovingDown)
@@ -136,8 +158,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
             if(robot.flipper.getCurrentPosition() >  robot.target && robot.flipArmIsMovingUp)
             {
-                robot.flipper.setPower(-0.05);
-                robot.flipper2.setPower(0.05);
+                robot.flipper.setPower(-0.35);
+                robot.flipper2.setPower(0.35);
                 robot.flipArmIsMovingUp = false;
             }
 
@@ -166,47 +188,33 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 
             //Spin Collector
-             /*   if(gamepad2.right_trigger > 0.05)
+               if(gamepad2.right_trigger > 0.05)
                 {
-                    robot.spinCollector(-gamepad2.right_trigger);
+                    robot.spinCollector("in");
                 }
 
                 else if(gamepad2.left_trigger > 0.05)
                 {
-                    robot.spinCollector(gamepad2.left_trigger);
+                    robot.spinCollector("out");
                 }
                 else
                 {
                     robot.stopCollector();
                 }
 
-                if(gamepad1.x)
+            //Adjust wrist
+                if(gamepad2.right_bumper)
                 {
-                    robot.markerUP();
+                    robot.setWristAutomatic("down");
                 }
-                if(gamepad1.b)
+                else if(gamepad2.left_bumper)
                 {
-                    robot.markerDown();
+                    robot.setWristAutomatic("up");
                 }
-            }*/
-
-            /*if(gamepad2.dpad_up)
-             {
-                 robot.flipper.setPower(0.45);
-                 robot.flipper2.setPower(-0.45);
-             }
-             else if(gamepad2.dpad_down)
-             {
-                 robot.flipper.setPower(-0.30);
-                 robot.flipper2.setPower(0.30);
-             }
-             else
-             {
-                 robot.flipper.setPower(0.00);
-                 robot.flipper2.setPower(0.00);
 
 
-             }*/
+
+
         }
     }
 
