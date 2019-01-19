@@ -45,6 +45,7 @@ public class GGHardware {
     //public AnalogInput ultra;
 
     public final double deadZone = 0.15;
+    public double wristPosition = 0.00;
     public float FRPower, FLPower, BRPower, BLPower;
     public double averageEncoderValue,flipperValue, eValue;
     boolean liftIsMovingUp = false;
@@ -55,12 +56,25 @@ public class GGHardware {
     public final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";
     public final String LABEL_GOLD_MINERAL = "Gold Mineral";
     public final String LABEL_SILVER_MINERAL = "Silver Mineral";
+    public final int hangLiftUp = -8000;
     public int targetHigh, targetLow, target;
-    public double Pk = 0.003;
+    public double Pk = 0.002;
     public boolean flipArmIsMovingUp = false;
     public boolean flipArmIsMovingDown = false;
     public boolean robotIsMoving = false;
     public boolean flipArmIsUp = false;
+
+    public boolean movingToP1 = false;
+    public boolean movingToP2 = false;
+    public boolean movingToP3 = false;
+    public boolean movingTopP4 = false;
+
+    public boolean manual = false;
+    final int p1 = 1200;
+    final int p2 = 600;
+    final int p3 = 300;
+    final int p4 = 0;
+
     BNO055IMU imu;
     //UltrasonicSensor ultra;
     Orientation lastAngles;
@@ -253,6 +267,20 @@ public class GGHardware {
         }
     }
 
+    public void setWristManual(String direction)
+    {
+        if(direction == "up")
+        {
+            wristPosition += 0.05;
+            wrist.setPosition(wristPosition);
+        }
+        else
+        {
+            wristPosition -= 0.05;
+            wrist.setPosition(wristPosition);
+        }
+    }
+
     ////Marker servo Methods//////x
     public void  markerUP ()
     {
@@ -306,16 +334,28 @@ public class GGHardware {
 
     }
 
-    public void flipArm(String direction)
+    public void flipArm(int position)
     {
-        if(direction == "up")
+        if(position == p1)
         {
-            flipArmIsMovingUp = true;
+            movingToP1 = true;
+            setTarget(0);
 
+        }
+        else if (position == p2)
+        {
+            movingToP2 = true;
+            setTarget(300);
+        }
+        else if (position == p3)
+        {
+            movingToP3 = true;
+            setTarget(600);
         }
         else
         {
-            flipArmIsMovingDown = true;
+            movingTopP4 = true;
+            setTarget(1200);
         }
 
     }

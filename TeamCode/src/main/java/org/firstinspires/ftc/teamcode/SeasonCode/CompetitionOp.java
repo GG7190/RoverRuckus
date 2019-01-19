@@ -27,14 +27,11 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
         robot.resetAndRunWithoutEncoders();
         robot.markerUP();
+        robot.wrist.setPosition(0.75);
         robot.flipper.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.flipper.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        //robot.hangLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
         while (opModeIsActive()) {
-
-
 
             //print encoder values to driver station
             robot.getEncoderValues();
@@ -43,29 +40,14 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
             telemetry.addData("flipper pulses", robot.flipper.getCurrentPosition());
             telemetry.addData("Distnace: ", robot.distanceSensor.getDistance(DistanceUnit.INCH));
             telemetry.addData("Pk value:", robot.Pk);
+            telemetry.addData("Wrist Position: ", robot.wrist.getPosition());
+            telemetry.addData("Manual? ", robot.manual);
             telemetry.update();
-
-            //Reset encoder values by pressing the y button on gamepad 1
-            /*if(gamepad1.y)
-            {
-                robot.verticalLift.setPower(1.00);
-
-                robot.averageEncoderValue = 0;
-                robot.resetAndRunWithoutEncoders();
-                telemetry.addData("Encoder pulses: ", robot.averageEncoderValue);
-                telemetry.update();
-            }*/
 
             //recieve joystick values from controllers
 
             getJoyVals();
 
-            /*if (gamepad1.y) {
-                robot.averageEncoderValue = 0;
-                robot.resetAndRunWithoutEncoders();
-                telemetry.addData("Encoder pulses: ", robot.averageEncoderValue);
-                telemetry.update();
-            }*/
 
             // assign the power values to the motors
             robot.frontRight.setPower(robot.FRPower);
@@ -81,7 +63,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
             }
 
-            if (robot.hangLift.getCurrentPosition() < -8000 && robot.liftIsMovingUp == true)
+            if (robot.hangLift.getCurrentPosition() < robot.hangLiftUp && robot.liftIsMovingUp == true)
             {
                 robot.stopLift();
                 robot.liftIsUp = true;
@@ -105,11 +87,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
                 robot.resetAndRunWithoutEncoders();
             }
 
-            if(gamepad2.right_bumper)
-            {
-
-                robot.hangLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            }
 
             if(gamepad2.left_bumper)
             {
@@ -118,73 +95,61 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
             if(gamepad2.y)
             {
-                robot.setTarget(1200);
-                robot.flipArm("up");
+                robot.flipArm(robot.p4);
+                robot.wristPosition = 0.15;
+                robot.wrist.setPosition(robot.wristPosition);
             }
-
             if(gamepad2.a)
             {
-                robot.setTarget(0);
-                robot.flipArm("down");
+                robot.flipArm(robot.p1);
+                robot.wristPosition = 0.75;
+                robot.wrist.setPosition(robot.wristPosition);
             }
-
             if(gamepad2.b)
             {
-                robot.setTarget(300);
+                robot.flipArm(robot.p2);
+                robot.wristPosition = 0.750;
+                robot.wrist.setPosition(robot.wristPosition);
 
-               if(robot.flipArmIsUp == true)
-               {
-                   robot.flipArm("down");
-               }
-               else
-               {
-                   robot.flipArm("up");
-               }
             }
-
-            if(robot.flipper.getCurrentPosition() > 300)
+            if(gamepad2.x)
             {
-                robot.flipArmIsUp = true;
-            }
-            if(robot.flipper.getCurrentPosition() < 300)
-            {
-                robot.flipArmIsUp = false;
+                robot.flipArm(robot.p3);
+                robot.wristPosition = 0.6;
+                robot.wrist.setPosition(robot.wristPosition);
             }
 
-            if(robot.flipArmIsMovingUp || robot.flipArmIsMovingDown)
+            if(robot.movingTopP4 || robot.movingToP3 || robot.movingToP2 || robot.movingToP1)
             {
                 robot.adjustPowerValue();
             }
 
-            if(robot.flipper.getCurrentPosition() >  robot.target && robot.flipArmIsMovingUp)
-            {
-                robot.flipper.setPower(-0.35);
-                robot.flipper2.setPower(0.35);
-                robot.flipArmIsMovingUp = false;
-            }
 
-            if(robot.flipper.getCurrentPosition() < robot.target && robot.flipArmIsMovingDown)
+            if(robot.flipper.getCurrentPosition() < robot.targetHigh && robot.flipper.getCurrentPosition() > robot.targetLow && robot.movingToP1)
             {
                 robot.flipper.setPower(0.00);
                 robot.flipper2.setPower(0.00);
-                robot.flipArmIsMovingDown = false;
+                robot.movingToP1 = false;
+            }
+            if(robot.flipper.getCurrentPosition() <  robot.targetHigh && robot.flipper.getCurrentPosition() > robot.targetLow && robot.movingToP2)
+            {
+                robot.flipper.setPower(-0.35);
+                robot.flipper2.setPower(0.35);
+                robot.movingToP2 = false;
+            }
+            if(robot.flipper.getCurrentPosition() < robot.targetHigh && robot.flipper.getCurrentPosition() > robot.targetLow && robot.movingToP3)
+            {
+                robot.flipper.setPower(-0.35);
+                robot.flipper2.setPower(0.35);
+                robot.movingToP3 = false;
             }
 
-            /*if(gamepad2.x)
+            if(robot.flipper.getCurrentPosition() < robot.targetHigh && robot.flipper.getCurrentPosition() > robot.targetLow && robot.movingTopP4)
             {
-                robot.Pk = robot.Pk + 0.0005;
+                robot.flipper.setPower(0.00);
+                robot.flipper2.setPower(0.00);
+                robot.movingTopP4 = false;
             }
-
-            if(gamepad2.b)
-            {
-                robot.Pk = robot.Pk -0.0005;
-            }*/
-
-
-
-
-
-
 
 
             //Spin Collector
@@ -202,16 +167,68 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
                     robot.stopCollector();
                 }
 
-            //Adjust wrist
-                if(gamepad2.right_bumper)
+                //switch between manual and automatic modes
+                if(gamepad2.start)
                 {
-                    robot.setWristAutomatic("down");
-                }
-                else if(gamepad2.left_bumper)
-                {
-                    robot.setWristAutomatic("up");
+                    robot.manual = true;
                 }
 
+                if(gamepad2.back)
+                {
+                    robot.manual = false;
+                }
+
+
+                    if(gamepad2.right_stick_y > 0.5 && robot.wristPosition > 0)
+                    {
+                        robot.wristPosition -= 0.05;
+                        robot.wrist.setPosition(robot.wristPosition);
+                    }
+                    if(gamepad2.right_stick_y < -0.5 && robot.wristPosition < 1)
+                    {
+                        robot.wristPosition += 0.05;
+                        robot.wrist.setPosition(robot.wristPosition);
+                    }
+
+                    if(gamepad2.x)
+                    {
+
+                        robot.hangLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                    }
+
+
+
+
+
+
+
+            //Methods for later??
+            /*if(gamepad2.x)
+            {
+                robot.Pk = robot.Pk + 0.0005;
+            }
+
+            if(gamepad2.b)
+            {
+                robot.Pk = robot.Pk -0.0005;
+            }*/
+
+            /*if (gamepad1.y) {
+                robot.averageEncoderValue = 0;
+                robot.resetAndRunWithoutEncoders();
+                telemetry.addData("Encoder pulses: ", robot.averageEncoderValue);
+                telemetry.update();
+            }*/
+            //Reset encoder values by pressing the y button on gamepad 1
+            /*if(gamepad1.y)
+            {
+                robot.verticalLift.setPower(1.00);
+
+                robot.averageEncoderValue = 0;
+                robot.resetAndRunWithoutEncoders();
+                telemetry.addData("Encoder pulses: ", robot.averageEncoderValue);
+                telemetry.update();
+            }*/
 
 
 
