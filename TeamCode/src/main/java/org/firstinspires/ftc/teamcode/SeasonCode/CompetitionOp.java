@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.SeasonCode;
 
+import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -27,7 +28,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
         robot.resetAndRunWithoutEncoders();
         robot.markerUP();
-        robot.wrist.setPosition(0.75);
+        robot.wristPosition = 0.75;
+        robot.wrist.setPosition(robot.wristPosition);
+        robot.pattern = RevBlinkinLedDriver.BlinkinPattern.GREEN;
+        robot.blinkinLedDriver.setPattern(robot.pattern);
         robot.flipper.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.flipper.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 

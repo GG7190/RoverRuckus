@@ -22,6 +22,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 
 
 public class GGHardware {
@@ -42,7 +43,8 @@ public class GGHardware {
     public Servo dumper, marker, wrist;
     public CRServo collector;
     public DigitalChannel digitalTouch;
-    //public AnalogInput ultra;
+    RevBlinkinLedDriver blinkinLedDriver;
+    RevBlinkinLedDriver.BlinkinPattern pattern;
 
     public final double deadZone = 0.15;
     public double wristPosition = 0.00;
@@ -114,7 +116,9 @@ public class GGHardware {
         digitalTouch = hardwareMap.get(DigitalChannel.class, "ts");
         distanceSensor = hardwareMap.get(DistanceSensor.class, "ds");
         imu = hardwareMap.get(BNO055IMU.class, "imu");
-        //ultra = hardwareMap.get(AnalogInput.class, "us");
+
+        //LEDs
+        blinkinLedDriver = hardwareMap.get(RevBlinkinLedDriver.class, "bk");
 
 
 
