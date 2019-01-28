@@ -1,13 +1,15 @@
 package org.firstinspires.ftc.teamcode.SeasonCode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import java.util.List;
 
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 
-@Autonomous(name = "TestWristAuto", group = "Autonomous")
+@Autonomous(name = "TestMarkerAuto", group = "Autonomous")
+@Disabled
 public class TestTurn extends LinearOpMode
 {
 
@@ -37,10 +39,14 @@ public class TestTurn extends LinearOpMode
             robot.Turn(0.25, 90, 5, "spinR");
             robot.Turn(0.25, 180,5,"spinL");
             sleep(2000);*/
-            robot.wrist.setPosition(0.35);
-            telemetry.addData("wristposition: ", robot.wrist.getPosition());
+            robot.markerUP();
+            telemetry.addData("markerposition: ", robot.marker.getPosition());
             telemetry.update();
-            sleep(50000);
+            sleep(2000);
+            robot.markerDown();
+            robot.flipper.setPower(1.00);
+            sleep(2000);
+            robot.flipper.setPower(0.0);
             stop();
         }
     }

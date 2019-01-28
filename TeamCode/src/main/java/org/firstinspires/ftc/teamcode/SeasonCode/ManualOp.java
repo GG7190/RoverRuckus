@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.SeasonCode.GGHardware;
 
 
 @TeleOp(name="ManualOp",group="TeleOp")
-
+@Disabled
 public class ManualOp extends LinearOpMode {
     GGHardware robot = new GGHardware();
     private ElapsedTime runtime = new ElapsedTime();

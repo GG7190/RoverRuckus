@@ -39,7 +39,7 @@ public class GGHardware {
     public LinearOpMode BaseOpMode = null;
     private ElapsedTime runtime = new ElapsedTime();
 
-    public DcMotor frontLeft, frontRight, backLeft, backRight, verticalLift, hangLift, flipper, flipper2;
+    public DcMotor frontLeft, frontRight, backLeft, backRight, verticalLift, hangLift, flipper, flipper2, extender;
     public Servo dumper, marker, wrist;
     public CRServo collector;
     public DigitalChannel digitalTouch;
@@ -106,6 +106,7 @@ public class GGHardware {
         hangLift = hardwareMap.get(DcMotor.class, "hl");
         flipper = hardwareMap.get(DcMotor.class, "fp");
         flipper2 = hardwareMap.get(DcMotor.class, "fp2");
+        extender = hardwareMap.get(DcMotor.class, "ex");
 
         //Servos
         marker = hardwareMap.get(Servo.class, "mk");
@@ -136,6 +137,16 @@ public class GGHardware {
         frontRight = hardwareMap.get(DcMotor.class, "fr");
         backLeft = hardwareMap.get(DcMotor.class, "bl");
         backRight = hardwareMap.get(DcMotor.class, "br");
+    }
+
+    public void initLED(GGParameters parameters)
+    {
+        hardwareMap = parameters.BaseOpMode.hardwareMap;
+        _parameters = parameters;
+        BaseOpMode = parameters.BaseOpMode;
+
+        //LEDs
+        blinkinLedDriver = hardwareMap.get(RevBlinkinLedDriver.class, "bk");
     }
 
     public double getEncoderValues()
@@ -200,7 +211,7 @@ public class GGHardware {
     ////Drive Methods/////////////////
     public void forwBackw(double speed)
     {
-        frontRight.setPower(speed);
+        frontRight.setPower(speed + 0.05);
         frontLeft.setPower(-speed);
         backRight.setPower(speed);
         backLeft.setPower(-speed);
@@ -232,12 +243,13 @@ public class GGHardware {
 
     public void spinLeft(double speed)
     {
-        frontRight.setPower(speed);
         frontLeft.setPower(speed);
         backRight.setPower(speed);
         backLeft.setPower(speed);
     }
     //////////////////////////
+
+
 
     ////Collector Methods//////////
     public void spinCollector(String direction)
@@ -293,7 +305,7 @@ public class GGHardware {
 
     public void markerDown()
     {
-        marker.setPosition(0.80);
+        marker.setPosition(0.50);
     }
     //////////////////////////////
 
@@ -310,7 +322,7 @@ public class GGHardware {
     }
     public void liftUpAuto()
     {
-      while(hangLift.getCurrentPosition() > -8000)
+      while(hangLift.getCurrentPosition() > -10450)
       {
           hangLift.setPower(-1.00);
           liftIsMovingUp = true;

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.SeasonCode;
 
+import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -16,7 +17,8 @@ public class AutoDepotLand extends LinearOpMode {
     @Override
 
 
-    public void runOpMode() {
+    public void runOpMode()
+    {
 
         GGParameters ggparameters = new GGParameters(this);
         robot.init(ggparameters);
@@ -37,23 +39,40 @@ public class AutoDepotLand extends LinearOpMode {
 
         while (opModeIsActive())
         {
-
+            //Find Location of gold Mineral
             String goldMineralLocation =  checkMinerals();
 
+            //Print location of gold mineral
             telemetry.addData("GoldMineral", goldMineralLocation);
             telemetry.update();
 
+            //If goldMineralLocation is not null turn the LEDs Gold
+            if(goldMineralLocation != null)
+            {
+                robot.pattern = RevBlinkinLedDriver.BlinkinPattern.GOLD;
+                robot.blinkinLedDriver.setPattern(robot.pattern);
+            }
+
+            //Initialize IMU
             robot.initializeIMU();
+
             //land
             robot.liftUpAuto();
 
+            //center robot in front of lander
             centerRobot();
 
+            //Reset angular position of robot to zero
             robot.turnTo(0.00);
 
+            //Depending on Mineral location knock of the gold mineral
             knockOffMineral(goldMineralLocation);
 
+            //turn lights off
+            robot.pattern = RevBlinkinLedDriver.BlinkinPattern.BLACK;
+            robot.blinkinLedDriver.setPattern(robot.pattern);
 
+            //Stop and end program
             stop();
 
 

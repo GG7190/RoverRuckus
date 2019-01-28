@@ -1,13 +1,15 @@
 package org.firstinspires.ftc.teamcode.SeasonCode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import java.util.List;
 
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 
-@Autonomous(name = "TestWristManual", group = "Autonomous")
+@Autonomous(name = "TestMarkerManual", group = "Autonomous")
+@Disabled
 public class TestTurnManual extends LinearOpMode
 {
 
@@ -26,25 +28,25 @@ public class TestTurnManual extends LinearOpMode
         //Wait for drivers to press play>>
         waitForStart();
 
-        robot.wristPosition = 0.35;
-        robot.wrist.setPosition(0.35);
+        robot.wristPosition = 0.65;
+        robot.wrist.setPosition(robot.wristPosition);
 
 
         while (opModeIsActive())
         {
-           telemetry.addData("wrist Position: ", robot.wristPosition);
+           telemetry.addData("wrist Position: ", robot.marker.getPosition());
            telemetry.update();
 
             if(gamepad2.right_stick_y > 0.5 && robot.wristPosition > 0)
             {
                 robot.wristPosition -= 0.0005;
-                robot.wrist.setPosition(robot.wristPosition);
+                robot.marker.setPosition(robot.wristPosition);
                 //sleep(250);
             }
-            if(gamepad2.right_stick_y < -0.5 && robot.wristPosition < 1)
+            if(gamepad2.right_stick_y < -0.5 && robot.wristPosition < .9)
             {
                 robot.wristPosition += 0.0005;
-                robot.wrist.setPosition(robot.wristPosition);
+                robot.marker.setPosition(robot.wristPosition);
                 //sleep(250);
             }
 

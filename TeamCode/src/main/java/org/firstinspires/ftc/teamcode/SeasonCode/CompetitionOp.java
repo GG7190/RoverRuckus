@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.SeasonCode;
 
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -10,6 +11,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 
 @TeleOp(name="CompetitionOp",group="TeleOp")
+@Disabled
 
     public class CompetitionOp extends LinearOpMode {
     GGHardware robot = new GGHardware();
@@ -30,7 +32,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
         robot.markerUP();
         robot.wristPosition = 0.75;
         robot.wrist.setPosition(robot.wristPosition);
-        robot.pattern = RevBlinkinLedDriver.BlinkinPattern.GREEN;
+        robot.pattern = RevBlinkinLedDriver.BlinkinPattern.RAINBOW_FOREST_PALETTE;
         robot.blinkinLedDriver.setPattern(robot.pattern);
         robot.flipper.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.flipper.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -49,7 +51,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
             telemetry.update();
 
             //recieve joystick values from controllers
-
             getJoyVals();
 
 
@@ -67,6 +68,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
             }
 
+            //Stop hang lift if the motor has run past the correct encoder value
             if (robot.hangLift.getCurrentPosition() < robot.hangLiftUp && robot.liftIsMovingUp == true)
             {
                 robot.stopLift();
@@ -74,50 +76,73 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
                 robot.resetAndRunWithoutEncoders();
             }
 
+            //Bring hang lift down
             if (gamepad2.dpad_down)
             {
                 robot.liftDown();
             }
 
+            //If d_pad down is not pressed and the hanf lift is not already moving, stop hang lift
             else if (!gamepad2.dpad_down && !robot.liftIsMovingUp)
             {
                 robot.stopLift();
 
             }
 
+            //If the touch sensor is pressed the hang lift is down
             if (!robot.digitalTouch.getState())
             {
                 robot.liftIsUp = false;
                 robot.resetAndRunWithoutEncoders();
             }
 
-
+            //CHECK FOR POSSIBLE NEW BUTTON/////
+            //Locks hang lift motor for final hang
             if(gamepad2.left_bumper)
             {
                 robot.hangLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
             }
 
+            //Lift flipper to 4th position
             if(gamepad2.y)
             {
+                robot.pattern = RevBlinkinLedDriver.BlinkinPattern.RAINBOW_FOREST_PALETTE;
+                robot.blinkinLedDriver.setPattern(robot.pattern);
+
                 robot.flipArm(robot.p4);
                 robot.wristPosition = 0.15;
                 robot.wrist.setPosition(robot.wristPosition);
             }
+
+            //Move flipper to 1st position
             if(gamepad2.a)
             {
+                robot.pattern = RevBlinkinLedDriver.BlinkinPattern.GREEN;
+                robot.blinkinLedDriver.setPattern(robot.pattern);
+
                 robot.flipArm(robot.p1);
                 robot.wristPosition = 0.75;
                 robot.wrist.setPosition(robot.wristPosition);
             }
+
+            //Move Flipper to 2nd position
             if(gamepad2.b)
             {
+                robot.pattern = RevBlinkinLedDriver.BlinkinPattern.GREEN;
+                robot.blinkinLedDriver.setPattern(robot.pattern);
+
                 robot.flipArm(robot.p2);
                 robot.wristPosition = 0.750;
                 robot.wrist.setPosition(robot.wristPosition);
 
             }
+
+            //Move Flipper to 3rd position
             if(gamepad2.x)
             {
+                robot.pattern = RevBlinkinLedDriver.BlinkinPattern.GREEN;
+                robot.blinkinLedDriver.setPattern(robot.pattern);
+
                 robot.flipArm(robot.p3);
                 robot.wristPosition = 0.6;
                 robot.wrist.setPosition(robot.wristPosition);
