@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.SeasonCode;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import java.util.List;
 
@@ -26,6 +27,11 @@ public class AutoCraterLand extends LinearOpMode {
 
         robot.pattern = RevBlinkinLedDriver.BlinkinPattern.BLACK;
         robot.blinkinLedDriver.setPattern(robot.pattern);
+        robot.wristPosition = 0.75;
+        robot.wrist.setPosition(robot.wristPosition);
+        robot.hangLift.setPower(0.05);
+        robot.pattern = RevBlinkinLedDriver.BlinkinPattern.LARSON_SCANNER_RED;
+        robot.blinkinLedDriver.setPattern(robot.pattern);
 
         if (robot.tfod != null)
         {
@@ -41,14 +47,24 @@ public class AutoCraterLand extends LinearOpMode {
 
         while (opModeIsActive())
         {
-            robot.pattern = RevBlinkinLedDriver.BlinkinPattern.LARSON_SCANNER_RED;
-            robot.blinkinLedDriver.setPattern(robot.pattern);
-            //Find Gold Mineral
+
+            robot.extender.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.extender.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            robot.shoulder1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.shoulder1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            robot.hangLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.hangLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            //Find Gold Mineral//
             String goldMineralLocation =  checkMinerals();
 
             //Print Location of mineral
             telemetry.addData("GoldMineral", goldMineralLocation);
             telemetry.update();
+
+
+
+            //Initialize IMU
+            robot.initializeIMU();
 
             //Turn lights gold if a location of the gold mineral was found
             if(goldMineralLocation != null)
@@ -56,9 +72,6 @@ public class AutoCraterLand extends LinearOpMode {
                 robot.pattern = RevBlinkinLedDriver.BlinkinPattern.GOLD;
                 robot.blinkinLedDriver.setPattern(robot.pattern);
             }
-
-            //Initialize IMU
-            robot.initializeIMU();
 
             //land
             robot.liftUpAuto();
@@ -72,8 +85,12 @@ public class AutoCraterLand extends LinearOpMode {
             //Reset robot's angular position to 0 degrees
             //robot.turnTo(0.00);
 
+
+
             //Run sequence to knock of mineral depending on the location of the gold
-            //knockOffMineral(goldMineralLocation);
+            knockOffMineral(goldMineralLocation);
+
+            alignToWall();
 
             //turn lights off
             //robot.pattern = RevBlinkinLedDriver.BlinkinPattern.BLACK;
@@ -168,10 +185,52 @@ public class AutoCraterLand extends LinearOpMode {
     public void centerRobot()
     {
         //center robot in front of lander
-        robot.Drive(0.25, 4, 3, "driftR");
-        robot.Drive(0.25, 5, 3, "forward");
-        robot.Drive(0.25, 5, 3, "driftL");
+        robot.Drive(0.5, 4, 3, "driftR");
+        robot.Drive(0.5, 5, 3, "forward");
+        robot.Drive(0.5, 3, 3, "driftL");
         //robot.Drive(0.35, 9, 3, "forward");
+    }
+
+    public void collectMineralCenter()
+    {
+        robot.shoulderUpAuto(150);
+        robot.extendOutAuto(900);
+        telemetry.addData("extender pulses", robot.extender.getCurrentPosition());
+        telemetry.update();
+        robot.spinCollector("out");
+        sleep(3000);
+        robot.stopCollector();
+        robot.extendInAuto(0);
+    }
+    public void collectMineralLeft()
+    {
+        telemetry.addData("ShoulderPulses: ", robot.shoulder1.getCurrentPosition());
+        telemetry.update();
+        robot.shoulderUpAuto(200);
+        robot.Turn(0.25,35,3,"spinL");
+        robot.extendOutAuto(1600);
+        telemetry.addData("extender pulses", robot.extender.getCurrentPosition());
+        telemetry.update();
+        robot.spinCollector("out");
+        sleep(3000);
+        robot.stopCollector();
+        robot.extendInAuto(0);
+        robot.Turn(0.25,35,3,"spinR");
+    }
+    public void collectMineralRight()
+    {
+        telemetry.addData("ShoulderPulses: ", robot.shoulder1.getCurrentPosition());
+        telemetry.update();
+        robot.shoulderUpAuto(200);
+        robot.Turn(0.25,45,3,"spinR");
+        robot.extendOutAuto(1600);
+        telemetry.addData("extender pulses", robot.extender.getCurrentPosition());
+        telemetry.update();
+        robot.spinCollector("out");
+        sleep(3000);
+        robot.stopCollector();
+        robot.extendInAuto(0);
+        robot.Turn(0.25,45,3,"spinL");
     }
 
     public void goldMineralCenter()
@@ -206,24 +265,27 @@ public class AutoCraterLand extends LinearOpMode {
     {
         if(locationOfGold == "right")
         {
-            goldMineralRight();
+            collectMineralRight();
         }
         else if(locationOfGold == "left")
         {
-            goldMineralLeft();
+            collectMineralLeft();
         }
         else
         {
-            goldMineralCenter();
+           collectMineralCenter();
         }
 
     }
 
     public void alignToWall()
     {
-        robot.Drive(0.35,40, 10, "driftL");
-        //robot.Turn(0.35,45,3,"spinR");
-        //robot.driveUsingDistanceSensor();
+        robot.Drive(0.55,1,3, "forward");
+        robot.Drive(0.55,20, 10, "driftL");
+        robot.Turn(0.35,45,3,"spinR");
+        robot.driveUsingDistanceSensor();
+        robot.pattern = RevBlinkinLedDriver.BlinkinPattern.RED;
+        robot.blinkinLedDriver.setPattern(robot.pattern);
     }
 
 

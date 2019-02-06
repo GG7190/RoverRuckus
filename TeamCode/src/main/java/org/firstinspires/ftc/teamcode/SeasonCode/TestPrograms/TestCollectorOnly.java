@@ -1,6 +1,5 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.SeasonCode.TestPrograms;
 
-import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -10,7 +9,6 @@ import org.firstinspires.ftc.teamcode.SeasonCode.GGHardware;
 import org.firstinspires.ftc.teamcode.SeasonCode.GGParameters;
 
 @Autonomous(name = "TestCollector", group = "Autonomous")
-@Disabled
 public class TestCollectorOnly extends LinearOpMode
 {
 
@@ -28,8 +26,8 @@ public class TestCollectorOnly extends LinearOpMode
 
 
         //Wait for drivers to press play>>
-        robot.flipper.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.flipper.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.shoulder1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.shoulder1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         //robot.pattern = RevBlinkinLedDriver.BlinkinPattern.CP1_2_SPARKLE_1_ON_2;
         //robot.blinkinLedDriver.setPattern(robot.pattern);
         //robot.wristPosition = 0.75;

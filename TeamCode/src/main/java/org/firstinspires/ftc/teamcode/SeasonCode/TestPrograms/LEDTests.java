@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.SeasonCode;
+package org.firstinspires.ftc.teamcode.SeasonCode.TestPrograms;
 
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -33,11 +33,9 @@ public class LEDTests extends LinearOpMode
 
         while (opModeIsActive())
         {
-            robot.pattern = RevBlinkinLedDriver.BlinkinPattern.STROBE_GOLD;
-            robot.blinkinLedDriver.setPattern(robot.pattern);
+            robot.setLEDPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
             sleep(2000);
-            robot.pattern = RevBlinkinLedDriver.BlinkinPattern.GOLD;
-            robot.blinkinLedDriver.setPattern(robot.pattern);
+            robot.setLEDPattern(RevBlinkinLedDriver.BlinkinPattern.GOLD);
             sleep(4000);
             stop();
         }

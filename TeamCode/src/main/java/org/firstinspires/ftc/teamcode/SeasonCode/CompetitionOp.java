@@ -24,18 +24,21 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
         GGParameters ggparameters = new GGParameters(this);
         robot.init(ggparameters);
 
-        waitForStart();
-
-        //initialize servo after start is pressed
-
         robot.resetAndRunWithoutEncoders();
         robot.markerUP();
         robot.wristPosition = 0.75;
         robot.wrist.setPosition(robot.wristPosition);
         robot.pattern = RevBlinkinLedDriver.BlinkinPattern.RAINBOW_FOREST_PALETTE;
         robot.blinkinLedDriver.setPattern(robot.pattern);
-        robot.flipper.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.flipper.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.shoulder1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.shoulder1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        waitForStart();
+        while(!opModeIsActive() && !isStopRequested() )
+        {
+            telemetry.addData("status", "waiting for start command...");
+            telemetry.update();
+        }
 
         while (opModeIsActive()) {
 
@@ -43,7 +46,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
             robot.getEncoderValues();
             telemetry.addData("Encoder pulses: ", robot.averageEncoderValue);
             telemetry.addData("Vertical Lift Pulses", robot.hangLift.getCurrentPosition());
-            telemetry.addData("flipper pulses", robot.flipper.getCurrentPosition());
+            telemetry.addData("shoulder1 pulses", robot.shoulder1.getCurrentPosition());
             telemetry.addData("Distnace: ", robot.distanceSensor.getDistance(DistanceUnit.INCH));
             telemetry.addData("Pk value:", robot.Pk);
             telemetry.addData("Wrist Position: ", robot.wrist.getPosition());
@@ -103,7 +106,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
                 robot.hangLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
             }
 
-            //Lift flipper to 4th position
+            //Lift shoulder1 to 4th position
             if(gamepad2.y)
             {
                 robot.pattern = RevBlinkinLedDriver.BlinkinPattern.RAINBOW_FOREST_PALETTE;
@@ -114,7 +117,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
                 robot.wrist.setPosition(robot.wristPosition);
             }
 
-            //Move flipper to 1st position
+            //Move shoulder1 to 1st position
             if(gamepad2.a)
             {
                 robot.pattern = RevBlinkinLedDriver.BlinkinPattern.GREEN;
@@ -154,29 +157,29 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
             }
 
 
-            if(robot.flipper.getCurrentPosition() < robot.targetHigh && robot.flipper.getCurrentPosition() > robot.targetLow && robot.movingToP1)
+            if(robot.shoulder1.getCurrentPosition() < robot.targetHigh && robot.shoulder1.getCurrentPosition() > robot.targetLow && robot.movingToP1)
             {
-                robot.flipper.setPower(0.00);
-                robot.flipper2.setPower(0.00);
+                robot.shoulder1.setPower(0.00);
+                robot.shoulder2.setPower(0.00);
                 robot.movingToP1 = false;
             }
-            if(robot.flipper.getCurrentPosition() <  robot.targetHigh && robot.flipper.getCurrentPosition() > robot.targetLow && robot.movingToP2)
+            if(robot.shoulder1.getCurrentPosition() <  robot.targetHigh && robot.shoulder1.getCurrentPosition() > robot.targetLow && robot.movingToP2)
             {
-                robot.flipper.setPower(-0.35);
-                robot.flipper2.setPower(0.35);
+                robot.shoulder1.setPower(-0.35);
+                robot.shoulder2.setPower(0.35);
                 robot.movingToP2 = false;
             }
-            if(robot.flipper.getCurrentPosition() < robot.targetHigh && robot.flipper.getCurrentPosition() > robot.targetLow && robot.movingToP3)
+            if(robot.shoulder1.getCurrentPosition() < robot.targetHigh && robot.shoulder1.getCurrentPosition() > robot.targetLow && robot.movingToP3)
             {
-                robot.flipper.setPower(-0.35);
-                robot.flipper2.setPower(0.35);
+                robot.shoulder1.setPower(-0.35);
+                robot.shoulder2.setPower(0.35);
                 robot.movingToP3 = false;
             }
 
-            if(robot.flipper.getCurrentPosition() < robot.targetHigh && robot.flipper.getCurrentPosition() > robot.targetLow && robot.movingTopP4)
+            if(robot.shoulder1.getCurrentPosition() < robot.targetHigh && robot.shoulder1.getCurrentPosition() > robot.targetLow && robot.movingTopP4)
             {
-                robot.flipper.setPower(0.00);
-                robot.flipper2.setPower(0.00);
+                robot.shoulder1.setPower(0.00);
+                robot.shoulder2.setPower(0.00);
                 robot.movingTopP4 = false;
             }
 

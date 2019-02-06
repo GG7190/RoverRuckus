@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.SeasonCode.TestPrograms;
 
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -8,9 +8,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.SeasonCode.GGHardware;
 import org.firstinspires.ftc.teamcode.SeasonCode.GGParameters;
 
-    @Autonomous(name = "TestExtender", group = "Autonomous")
+    @Autonomous(name = "TestExtenderOnly", group = "Autonomous")
     @Disabled
-    public class TestExtender extends LinearOpMode
+    public class TestExtenderOnly extends LinearOpMode
     {
 
 
@@ -49,36 +49,6 @@ import org.firstinspires.ftc.teamcode.SeasonCode.GGParameters;
                        robot.extender.setPower(0.05);
                    }
 
-                telemetry.addData("wrist Position: ", robot.wristPosition);
-                telemetry.update();
-
-                if(gamepad1.right_stick_y > 0.5 && robot.wristPosition > 0)
-                {
-                    robot.wristPosition -= 0.0005;
-                    robot.wrist.setPosition(robot.wristPosition);
-                    //sleep(250);
-                }
-                if(gamepad1.right_stick_y < -0.5 && robot.wristPosition < 1)
-                {
-                    robot.wristPosition += 0.0005;
-                    robot.wrist.setPosition(robot.wristPosition);
-                    //sleep(250);
-                }
-
-                //Spin Collector
-                if(gamepad1.right_trigger > 0.05)
-                {
-                    robot.spinCollector("in");
-                }
-
-                else if(gamepad1.left_trigger > 0.05)
-                {
-                    robot.spinCollector("out");
-                }
-                else
-                {
-                    robot.stopCollector();
-                }
 
 
             }

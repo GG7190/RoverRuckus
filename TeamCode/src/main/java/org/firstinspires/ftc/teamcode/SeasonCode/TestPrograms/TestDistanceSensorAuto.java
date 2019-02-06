@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.SeasonCode;
+package org.firstinspires.ftc.teamcode.SeasonCode.TestPrograms;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -6,9 +6,11 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import java.util.List;
 
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.teamcode.SeasonCode.GGHardware;
+import org.firstinspires.ftc.teamcode.SeasonCode.GGParameters;
 
-@Autonomous(name = "TestDistanceSensor", group = "Autonomous")
-public class TestDistanceSensor extends LinearOpMode {
+@Autonomous(name = "TestDistanceSensorAuto", group = "Autonomous")
+public class TestDistanceSensorAuto extends LinearOpMode {
 
 
     GGHardware robot = new GGHardware();

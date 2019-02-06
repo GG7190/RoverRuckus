@@ -35,21 +35,21 @@ public class GGHardware {
     DistanceSensor distanceSensor;
 
     /* Local OP Mode Members*/
-    public HardwareMap hardwareMap  = null;
+    public HardwareMap hardwareMap = null;
     public LinearOpMode BaseOpMode = null;
     private ElapsedTime runtime = new ElapsedTime();
 
-    public DcMotor frontLeft, frontRight, backLeft, backRight, verticalLift, hangLift, flipper, flipper2, extender;
+    public DcMotor frontLeft, frontRight, backLeft, backRight, verticalLift, hangLift, shoulder1, shoulder2, extender;
     public Servo dumper, marker, wrist;
     public CRServo collector;
     public DigitalChannel digitalTouch;
-    RevBlinkinLedDriver blinkinLedDriver;
-    RevBlinkinLedDriver.BlinkinPattern pattern;
+    public RevBlinkinLedDriver blinkinLedDriver;
+    public RevBlinkinLedDriver.BlinkinPattern pattern;
 
     public final double deadZone = 0.15;
     public double wristPosition = 0.00;
     public float FRPower, FLPower, BRPower, BLPower;
-    public double averageEncoderValue,flipperValue, eValue;
+    public double averageEncoderValue, flipperValue, eValue;
     boolean liftIsMovingUp = false;
     boolean liftIsUp = false;
     public VuforiaLocalizer vuforia;
@@ -58,7 +58,7 @@ public class GGHardware {
     public final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";
     public final String LABEL_GOLD_MINERAL = "Gold Mineral";
     public final String LABEL_SILVER_MINERAL = "Silver Mineral";
-    public final int hangLiftUp = -8000;
+    public final int hangLiftUp = -10450;
     public int targetHigh, targetLow, target;
     public double Pk = 0.002;
     public boolean flipArmIsMovingUp = false;
@@ -84,13 +84,11 @@ public class GGHardware {
     double globalAngle, power = .30, correction;
 
 
-    public GGHardware()
-    {
+    public GGHardware() {
 
     }
 
-    public void init(GGParameters parameters)
-    {
+    public void init(GGParameters parameters) {
 
         hardwareMap = parameters.BaseOpMode.hardwareMap;
         _parameters = parameters;
@@ -102,16 +100,27 @@ public class GGHardware {
         backLeft = hardwareMap.get(DcMotor.class, "bl");
         backRight = hardwareMap.get(DcMotor.class, "br");
 
+        forwBackw(0.00);
+
         //Other DC Motors
         hangLift = hardwareMap.get(DcMotor.class, "hl");
-        flipper = hardwareMap.get(DcMotor.class, "fp");
-        flipper2 = hardwareMap.get(DcMotor.class, "fp2");
+        shoulder1 = hardwareMap.get(DcMotor.class, "fp");
+        shoulder2 = hardwareMap.get(DcMotor.class, "fp2");
         extender = hardwareMap.get(DcMotor.class, "ex");
+
+        hangLift.setPower(0.0);
+        shoulder1.setPower(0.0);
+        shoulder2.setPower(0.0);
+        extender.setPower(0.0);
 
         //Servos
         marker = hardwareMap.get(Servo.class, "mk");
         collector = hardwareMap.get(CRServo.class, "clL");
         wrist = hardwareMap.get(Servo.class, "wr");
+
+        markerUP();
+        collector.setPower(0.0);
+        //wrist.setPosition(0.75);
 
         //Sensors
         digitalTouch = hardwareMap.get(DigitalChannel.class, "ts");
@@ -122,12 +131,9 @@ public class GGHardware {
         blinkinLedDriver = hardwareMap.get(RevBlinkinLedDriver.class, "bk");
 
 
-
-
     }
 
-    public void initDemo(GGParameters parameters)
-    {
+    public void initDemo(GGParameters parameters) {
         hardwareMap = parameters.BaseOpMode.hardwareMap;
         _parameters = parameters;
         BaseOpMode = parameters.BaseOpMode;
@@ -139,8 +145,7 @@ public class GGHardware {
         backRight = hardwareMap.get(DcMotor.class, "br");
     }
 
-    public void initLED(GGParameters parameters)
-    {
+    public void initLED(GGParameters parameters) {
         hardwareMap = parameters.BaseOpMode.hardwareMap;
         _parameters = parameters;
         BaseOpMode = parameters.BaseOpMode;
@@ -149,45 +154,41 @@ public class GGHardware {
         blinkinLedDriver = hardwareMap.get(RevBlinkinLedDriver.class, "bk");
     }
 
-    public double getEncoderValues()
-    {
-       double fREncoder = Math.abs(frontRight.getCurrentPosition());
-       double fLEncoder = Math.abs(frontLeft.getCurrentPosition());
-       double bREncoder = Math.abs(backRight.getCurrentPosition());
-       double bLEncoder = Math.abs(frontRight.getCurrentPosition());
+    public double getEncoderValues() {
+        double fREncoder = Math.abs(frontRight.getCurrentPosition());
+        double fLEncoder = Math.abs(frontLeft.getCurrentPosition());
+        double bREncoder = Math.abs(backRight.getCurrentPosition());
+        double bLEncoder = Math.abs(frontRight.getCurrentPosition());
 
-       averageEncoderValue = (fREncoder + fLEncoder + bREncoder + bLEncoder)/4;
-       return averageEncoderValue;
+        averageEncoderValue = (fREncoder + fLEncoder + bREncoder + bLEncoder) / 4;
+        return averageEncoderValue;
 
     }
 
-    public void initializeIMU()
-    {
+    public void initializeIMU() {
         BNO055IMU.Parameters IMUParameters = new BNO055IMU.Parameters();
-        IMUParameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
-        IMUParameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        IMUParameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        IMUParameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
         IMUParameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
-        IMUParameters.loggingEnabled      = true;
-        IMUParameters.loggingTag          = "IMU";
+        IMUParameters.loggingEnabled = true;
+        IMUParameters.loggingTag = "IMU";
         IMUParameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
         imu.initialize(IMUParameters);
         resetAngle();
 
     }
 
-    public void getIMUValues()
-    {
-        lastAngles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        gravity  = imu.getGravity();
+    public void getIMUValues() {
+        lastAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        gravity = imu.getGravity();
     }
 
-    public void resetAndRunWithoutEncoders()
-    {
+    public void resetAndRunWithoutEncoders() {
         backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        hangLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //hangLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
 
         backLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -199,8 +200,7 @@ public class GGHardware {
     }
 
 
-    public double convertInchesToPulses(double inches)
-    {
+    public double convertInchesToPulses(double inches) {
         final int PPR = 750;
         final int largeWheelDiameter = 4;
         double ppi = (int) (PPR / (largeWheelDiameter * Math.PI));
@@ -209,40 +209,35 @@ public class GGHardware {
     }
 
     ////Drive Methods/////////////////
-    public void forwBackw(double speed)
-    {
+    public void forwBackw(double speed) {
         frontRight.setPower(speed + 0.05);
         frontLeft.setPower(-speed);
         backRight.setPower(speed);
         backLeft.setPower(-speed);
     }
 
-    public void driftRight(double speed)
-    {
+    public void driftRight(double speed) {
         frontRight.setPower(-speed);
         frontLeft.setPower(-speed);
         backRight.setPower(speed);
         backLeft.setPower(speed);
     }
 
-    public void driftLeft(double speed)
-    {
+    public void driftLeft(double speed) {
         frontRight.setPower(speed);
         frontLeft.setPower(speed);
         backRight.setPower(-speed);
         backLeft.setPower(-speed);
     }
 
-    public void spinRight(double speed)
-    {
+    public void spinRight(double speed) {
         frontRight.setPower(-speed);
         frontLeft.setPower(-speed);
         backRight.setPower(-speed);
         backLeft.setPower(-speed);
     }
 
-    public void spinLeft(double speed)
-    {
+    public void spinLeft(double speed) {
         frontLeft.setPower(speed);
         backRight.setPower(speed);
         backLeft.setPower(speed);
@@ -250,105 +245,147 @@ public class GGHardware {
     //////////////////////////
 
 
-
     ////Collector Methods//////////
-    public void spinCollector(String direction)
-    {
-        if(direction == "in")
-        {
-            collector.setPower(-.70);
-        }
-        else
-        {
-            collector.setPower(0.70);
+    //Don't change 0.7 servo cannot handle more than that
+    public void spinCollector(String direction) {
+        if (direction == "in") {
+            collector.setPower(-0.7);
+        } else {
+            collector.setPower(0.7);
         }
 
     }
 
-    public void stopCollector()
-    {
+    public void stopCollector() {
         collector.setPower(0.00);
     }
 
-    public void setWristAutomatic(String position)
-    {
-        if(position == "up")
-        {
-            wrist.setPosition(0.20);
-        }
-
-        else
-        {
-            wrist.setPosition(0.75);
-        }
+    public void setWristPosition(double position) {
+        wristPosition = position;
+        wrist.setPosition(wristPosition);
     }
 
-    public void setWristManual(String direction)
-    {
-        if(direction == "up")
-        {
+    public void setWristManual(String direction) {
+        if (direction == "up") {
             wristPosition += 0.05;
             wrist.setPosition(wristPosition);
-        }
-        else
-        {
+        } else {
             wristPosition -= 0.05;
             wrist.setPosition(wristPosition);
         }
     }
 
+
     ////Marker servo Methods//////x
-    public void  markerUP ()
-    {
-        marker.setPosition(0.00);
+    public void markerUP() {
+        marker.setPosition(0.07);
     }
 
-    public void markerDown()
-    {
-        marker.setPosition(0.50);
+    public void markerDown() {
+        marker.setPosition(0.75);
     }
     //////////////////////////////
 
     ////Lift Up Preset///////////////
-    public void liftUp()
-    {
-        if(!liftIsUp && hangLift.getCurrentPosition() > -8000)
-        {
+    public void liftUp() {
+        if (!liftIsUp && hangLift.getCurrentPosition() > hangLiftUp) {
             hangLift.setPower(-1.00);
             liftIsMovingUp = true;
-            resetAndRunWithoutEncoders();
         }
 
     }
-    public void liftUpAuto()
-    {
-      while(hangLift.getCurrentPosition() > -10450)
-      {
-          hangLift.setPower(-1.00);
-          liftIsMovingUp = true;
 
-      }
-      stopLift();
+    public void liftUpAuto() {
+        while (hangLift.getCurrentPosition() > hangLiftUp) {
+            hangLift.setPower(-1.00);
+            liftIsMovingUp = true;
+
+        }
+        stopLift();
     }
 
     ////Stop Lift////////////////////
-    public void stopLift()
-    {
+    public void stopLift() {
         hangLift.setPower(0.00);
         liftIsMovingUp = false;
         //liftIsUp = true;
     }
 
     ////Lift Down////////////////////
-    public void liftDown()
-    {
-        if (digitalTouch.getState())
-        {
+    public void liftDown() {
+        if (digitalTouch.getState()) {
             hangLift.setPower(1.00);
 
         }
 
     }
+
+    public void checkIfLifDown()
+    {
+        if (hangLift.getCurrentPosition() < hangLiftUp && liftIsMovingUp == true)
+        {
+            stopLift();
+            liftIsUp = true;
+            resetAndRunWithoutEncoders();
+        }
+    }
+
+    public void liftIsDown()
+    {
+        liftIsUp = false;
+        resetAndRunWithoutEncoders();
+
+    }
+
+    public void lockHangLift()
+    {
+        hangLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+    }
+
+    public void unlockHangLift()
+    {
+        hangLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+    }
+
+
+
+    public void shoulderUpAuto(int pulses)
+    {
+        shoulder1.setPower(0.35);
+        shoulder2.setPower(-0.35);
+        while(shoulder1.getCurrentPosition() < pulses)
+        {
+
+        }
+        shoulder1.setPower(0.05);
+        shoulder2.setPower(-0.05);
+    }
+
+    public void extendOutAuto(int pulses)
+    {
+        extender.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        while(extender.getCurrentPosition() < pulses)
+        {
+            extender.setPower(0.55);
+
+        }
+        extender.setPower(0.05);
+        extender.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+    }
+
+    public void extendInAuto(int pulses)
+    {
+        extender.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        while(extender.getCurrentPosition() > pulses)
+        {
+            extender.setPower(-0.15);
+
+        }
+        extender.setPower(0.05);
+        extender.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+    }
+
+
 
     public void flipArm(int position)
     {
@@ -378,7 +415,7 @@ public class GGHardware {
 
     public double determinePower()
     {
-        flipperValue = flipper.getCurrentPosition();
+        flipperValue = shoulder1.getCurrentPosition();
         eValue = target - flipperValue;
         double power = Pk *(eValue);
 
@@ -408,8 +445,8 @@ public class GGHardware {
 
     public void adjustPowerValue()
     {
-        flipper.setPower(determinePower());
-        flipper2.setPower(-determinePower());
+        shoulder1.setPower(determinePower());
+        shoulder2.setPower(-determinePower());
     }
 
 
@@ -443,14 +480,14 @@ public class GGHardware {
     public void turnTo(double heading)
     {
         double currentAngle = getAngle();
-        double headingMax = heading + 5;
-        double headingMin = heading - 5;
+        double headingMax = heading + 1;
+        double headingMin = heading - 1;
 
         if(currentAngle < heading)
         {
-            while(getAngle() < headingMin)
+            while(getAngle() < heading)
             {
-                spinLeft(0.25);
+                spinLeft(0.35);
             }
 
             forwBackw(0.00);
@@ -459,9 +496,9 @@ public class GGHardware {
 
         else
         {
-            while(getAngle() > headingMax)
+            while(getAngle() > heading)
             {
-                spinRight(0.25);
+                spinRight(0.35);
             }
 
             forwBackw(0.00);
@@ -523,10 +560,10 @@ public class GGHardware {
 
     public void driveUsingDistanceSensor()
     {
-        driftLeft(0.4);
+        driftLeft(1);
         robotIsMoving = true;
 
-        while(distanceSensor.getDistance(DistanceUnit.INCH) > 7)
+        while(distanceSensor.getDistance(DistanceUnit.INCH) > 12)
         {
             _parameters.BaseOpMode.telemetry.addData("distance ", distanceSensor.getDistance(DistanceUnit.INCH) );
             _parameters.BaseOpMode.telemetry.update();
@@ -587,6 +624,11 @@ public class GGHardware {
         return globalAngle;
     }
 
+    public void setLEDPattern(RevBlinkinLedDriver.BlinkinPattern patternName)
+    {
+        pattern = patternName;
+        blinkinLedDriver.setPattern(patternName);
+    }
 
 
     /**

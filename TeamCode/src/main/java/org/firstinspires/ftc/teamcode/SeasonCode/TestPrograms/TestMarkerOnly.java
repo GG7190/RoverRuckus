@@ -1,16 +1,14 @@
-package org.firstinspires.ftc.teamcode.SeasonCode;
+package org.firstinspires.ftc.teamcode.SeasonCode.TestPrograms;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import java.util.List;
-
-import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.teamcode.SeasonCode.GGHardware;
+import org.firstinspires.ftc.teamcode.SeasonCode.GGParameters;
 
 @Autonomous(name = "TestMarkerAuto", group = "Autonomous")
-@Disabled
-public class TestTurn extends LinearOpMode
+public class TestMarkerOnly extends LinearOpMode
 {
 
 
@@ -44,9 +42,9 @@ public class TestTurn extends LinearOpMode
             telemetry.update();
             sleep(2000);
             robot.markerDown();
-            robot.flipper.setPower(1.00);
-            sleep(2000);
-            robot.flipper.setPower(0.0);
+            //robot.shoulder1.setPower(1.00);
+            //sleep(2000);
+            //robot.shoulder1.setPower(0.0);
             stop();
         }
     }

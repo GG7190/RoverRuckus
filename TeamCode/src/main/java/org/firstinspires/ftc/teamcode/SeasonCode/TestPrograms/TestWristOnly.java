@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.SeasonCode;
+package org.firstinspires.ftc.teamcode.SeasonCode.TestPrograms;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -7,10 +7,12 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import java.util.List;
 
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.teamcode.SeasonCode.GGHardware;
+import org.firstinspires.ftc.teamcode.SeasonCode.GGParameters;
 
 @Autonomous(name = "TestMarkerManual", group = "Autonomous")
 @Disabled
-public class TestTurnManual extends LinearOpMode
+public class TestWristOnly extends LinearOpMode
 {
 
 
