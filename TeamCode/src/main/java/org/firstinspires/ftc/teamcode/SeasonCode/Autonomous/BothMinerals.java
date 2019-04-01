@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.SeasonCode;
+package org.firstinspires.ftc.teamcode.SeasonCode.Autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -6,6 +6,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import java.util.List;
 
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.teamcode.SeasonCode.GGHardware;
+import org.firstinspires.ftc.teamcode.SeasonCode.GGParameters;
 
 @Autonomous(name = "bothMinerals", group = "Autonomous")
 public class BothMinerals extends LinearOpMode {
@@ -192,10 +194,10 @@ public class BothMinerals extends LinearOpMode {
 
         sleep(700);
         //dump marker
-        robot.dumper.setPosition(0.7);
+        //robot.dumper.setPosition(0.7);
         sleep(200);
         //dumper back in starting position
-        robot.dumper.setPosition(0.12);
+        //robot.dumper.setPosition(0.12);
         robot.Drive(0.25, 36, 15, "forward");
     }
 

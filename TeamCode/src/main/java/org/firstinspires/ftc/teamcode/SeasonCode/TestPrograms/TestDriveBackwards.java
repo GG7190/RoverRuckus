@@ -9,8 +9,8 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.teamcode.SeasonCode.GGHardware;
 import org.firstinspires.ftc.teamcode.SeasonCode.GGParameters;
 
-@Autonomous(name = "TestDistanceSensorAuto", group = "Autonomous")
-public class TestDistanceSensorAuto extends LinearOpMode {
+@Autonomous(name = "TestDriveBackwards", group = "Autonomous")
+public class TestDriveBackwards extends LinearOpMode {
 
 
     GGHardware robot = new GGHardware();
@@ -27,11 +27,8 @@ public class TestDistanceSensorAuto extends LinearOpMode {
 
         while (opModeIsActive())
         {
-            robot.driveUsingDistanceSensor(12, 5);
+            robot.Drive(0.55,20,5,"backward");
             stop();
         }
-
     }
 }
-
-

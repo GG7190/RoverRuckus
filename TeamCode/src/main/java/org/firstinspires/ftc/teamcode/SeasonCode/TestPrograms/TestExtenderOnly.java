@@ -9,7 +9,6 @@ import org.firstinspires.ftc.teamcode.SeasonCode.GGHardware;
 import org.firstinspires.ftc.teamcode.SeasonCode.GGParameters;
 
     @Autonomous(name = "TestExtenderOnly", group = "Autonomous")
-    @Disabled
     public class TestExtenderOnly extends LinearOpMode
     {
 
@@ -29,8 +28,6 @@ import org.firstinspires.ftc.teamcode.SeasonCode.GGParameters;
             waitForStart();
 
 
-            robot.wristPosition = 0.75;
-            robot.wrist.setPosition(robot.wristPosition);
 
 
             while (opModeIsActive())

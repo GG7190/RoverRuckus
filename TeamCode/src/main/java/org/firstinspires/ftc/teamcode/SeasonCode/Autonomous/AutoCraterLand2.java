@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.SeasonCode;
+package org.firstinspires.ftc.teamcode.SeasonCode.Autonomous;
 
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -8,9 +8,11 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import java.util.List;
 
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.teamcode.SeasonCode.GGHardware;
+import org.firstinspires.ftc.teamcode.SeasonCode.GGParameters;
 
-@Autonomous(name = "AutoCraterLand", group = "Autonomous")
-public class AutoCraterLand extends LinearOpMode {
+@Autonomous(name = "AutoCraterLand2", group = "Autonomous")
+public class AutoCraterLand2 extends LinearOpMode {
 
 
     GGHardware robot = new GGHardware();
@@ -27,8 +29,6 @@ public class AutoCraterLand extends LinearOpMode {
 
         robot.pattern = RevBlinkinLedDriver.BlinkinPattern.BLACK;
         robot.blinkinLedDriver.setPattern(robot.pattern);
-        robot.wristPosition = 0.75;
-        robot.wrist.setPosition(robot.wristPosition);
         robot.hangLift.setPower(0.05);
         robot.pattern = RevBlinkinLedDriver.BlinkinPattern.LARSON_SCANNER_RED;
         robot.blinkinLedDriver.setPattern(robot.pattern);
@@ -75,6 +75,7 @@ public class AutoCraterLand extends LinearOpMode {
 
             //land
             robot.liftUpAuto();
+
             telemetry.addData("liftpulses: ", robot.hangLift.getCurrentPosition());
             telemetry.update();
 
@@ -91,6 +92,7 @@ public class AutoCraterLand extends LinearOpMode {
             knockOffMineral(goldMineralLocation);
 
             alignToWall();
+           // placeMarker();
 
             //turn lights off
             //robot.pattern = RevBlinkinLedDriver.BlinkinPattern.BLACK;
@@ -100,6 +102,7 @@ public class AutoCraterLand extends LinearOpMode {
             //alignToWall();
 
             //Stop and end program
+            robot.stopEverything();
             stop();
 
 
@@ -121,7 +124,7 @@ public class AutoCraterLand extends LinearOpMode {
             telemetry.addData("# Object Detected", updatedRecognitions.size());
             telemetry.update();
             if (updatedRecognitions.size() < 2) {
-                goldMineralCenter();
+                return "center";
             }
             else {
                 robot.forwBackw(0.00);
@@ -185,20 +188,21 @@ public class AutoCraterLand extends LinearOpMode {
     public void centerRobot()
     {
         //center robot in front of lander
-        robot.Drive(0.5, 4, 3, "driftR");
-        robot.Drive(0.5, 5, 3, "forward");
-        robot.Drive(0.5, 3, 3, "driftL");
+        robot.shoulderUpAuto(200);
+        robot.Drive(0.5, 1, 3, "driftR");
+        robot.Drive(0.5, 7, 3, "forward");
+        robot.Drive(0.5, 1, 3, "driftL");
         //robot.Drive(0.35, 9, 3, "forward");
     }
 
     public void collectMineralCenter()
     {
-        robot.shoulderUpAuto(150);
-        robot.extendOutAuto(900);
+        //robot.shoulderUpAuto(150);
+        robot.extendOutAuto(1500);
         telemetry.addData("extender pulses", robot.extender.getCurrentPosition());
         telemetry.update();
         robot.spinCollector("out");
-        sleep(3000);
+        sleep(500);
         robot.stopCollector();
         robot.extendInAuto(0);
     }
@@ -206,60 +210,35 @@ public class AutoCraterLand extends LinearOpMode {
     {
         telemetry.addData("ShoulderPulses: ", robot.shoulder1.getCurrentPosition());
         telemetry.update();
-        robot.shoulderUpAuto(200);
-        robot.Turn(0.25,35,3,"spinL");
-        robot.extendOutAuto(1600);
+        //robot.shoulderUpAuto(200);
+        //robot.Turn(0.25,33,3,"spinL");
+        robot.Drive(0.5, 8, 8, "driftL");
+        robot.extendOutAuto(1500);
         telemetry.addData("extender pulses", robot.extender.getCurrentPosition());
         telemetry.update();
         robot.spinCollector("out");
-        sleep(3000);
+        sleep(500);
         robot.stopCollector();
         robot.extendInAuto(0);
-        robot.Turn(0.25,35,3,"spinR");
+        robot.Drive(0.5, 8, 8, "driftR");
     }
     public void collectMineralRight()
     {
         telemetry.addData("ShoulderPulses: ", robot.shoulder1.getCurrentPosition());
         telemetry.update();
-        robot.shoulderUpAuto(200);
-        robot.Turn(0.25,45,3,"spinR");
-        robot.extendOutAuto(1600);
-        telemetry.addData("extender pulses", robot.extender.getCurrentPosition());
-        telemetry.update();
+        //robot.shoulderUpAuto(200);
+        robot.Drive(0.5, 9, 8, "driftR");
+        //robot.stopCollector();
+        robot.extendOutAuto(1500);
         robot.spinCollector("out");
-        sleep(3000);
+        sleep(500);
         robot.stopCollector();
         robot.extendInAuto(0);
-        robot.Turn(0.25,45,3,"spinL");
-    }
-
-    public void goldMineralCenter()
-    {
-        robot.Drive(0.35, 17, 8, "forward");
-        //placeMarker();
-        robot.Drive(0.35, 11, 8, "backward");
+        robot.Drive(0.5, 9, 8, "driftL");
 
     }
 
-    public void goldMineralRight()
-    {
-        robot.Drive(0.25, 16, 8, "driftR");
-        robot.Drive(0.25, 25,8, "forward" );
-        //robot.Turn(0.25,35,3,"spinL");
-        //placeMarker();
-        /*robot.Drive(0.25, 10, 8, "backward");
-        robot.Drive(0.25, 25, 8, "driftL");*/
 
-    }
-
-    public void goldMineralLeft()
-    {
-        robot.Drive(0.25, 17, 8, "driftL");
-        robot.Drive(0.25, 15,8, "forward" );
-        robot.Drive(0.50, 15, 8, "backward");
-        robot.Drive(0.50, 17, 8, "driftR");
-        //robot.Drive(0.5, 10,8,"backward");
-    }
 
     public void knockOffMineral(String locationOfGold)
     {
@@ -280,19 +259,25 @@ public class AutoCraterLand extends LinearOpMode {
 
     public void alignToWall()
     {
-        robot.Drive(0.55,1,3, "forward");
+        //robot.Drive(0.55,1,3, "forward");
         robot.Drive(0.55,20, 10, "driftL");
-        robot.Turn(0.35,45,3,"spinR");
-        robot.driveUsingDistanceSensor();
-        robot.pattern = RevBlinkinLedDriver.BlinkinPattern.RED;
-        robot.blinkinLedDriver.setPattern(robot.pattern);
+        robot.Turn(0.25,45,3,"spinR");
+        robot.driveUsingDistanceSensor(7,5);
+
+
     }
 
 
     public void placeMarker()
     {
-
+        robot.DriveAdjustForAngle(0.5, 20, 10, "backward");
         robot.markerDown();
+        sleep(1000);
+        robot.markerUP();
+        robot.DriveAdjustForAngle(0.5, 20, 10, "forward");
+        /*robot.shoulderUpAuto(400);
+        robot.extendOutAuto(1900);
+        sleep(5000);*/
 
     }
 }

@@ -1,10 +1,14 @@
-package org.firstinspires.ftc.teamcode.SeasonCode;
+package org.firstinspires.ftc.teamcode.SeasonCode.TeleOp;
 
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+
+import org.firstinspires.ftc.teamcode.SeasonCode.FtcGamepad;
+import org.firstinspires.ftc.teamcode.SeasonCode.GGHardware;
+import org.firstinspires.ftc.teamcode.SeasonCode.GGParameters;
 
 @TeleOp(name = "StateOp", group = "TeleOp")
 public class TeleOp_01_30_19 extends LinearOpMode
@@ -22,6 +26,8 @@ public class TeleOp_01_30_19 extends LinearOpMode
 
         GGParameters ggparameters = new GGParameters(this);
         robot.init(ggparameters);
+        robot.stopEverything();
+        sleep(1000);
 
 
         //Wait for drivers to press play>>
@@ -31,22 +37,21 @@ public class TeleOp_01_30_19 extends LinearOpMode
         robot.shoulder2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         robot.hangLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        robot.setWristPosition(0.25);
-        robot.setLEDPattern(RevBlinkinLedDriver.BlinkinPattern.COLOR_WAVES_FOREST_PALETTE);
+        //robot.setLEDPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
 
-        waitForStart();
+        //waitForStart();
 
-         /*   while(!opModeIsActive() && !isStopRequested() )
+        while(!opModeIsActive() && !isStopRequested() )
         {
-            telemetry.addData("status", "waiting for start command...");
-            telemetry.update();
-        }*/
+            robot.sendMessage("Waiting for start command");
+        }
 
         //reset all encoders
         //robot.resetAndRunWithoutEncoders();
 
         while (opModeIsActive())
         {
+            robot.sendMessage("OpMode Active");
 
             //GAMEPAD 1
            //GET JOYSTICK VALUES FROM CONTROLLER 1
@@ -62,10 +67,10 @@ public class TeleOp_01_30_19 extends LinearOpMode
             {
 
                 case FtcGamepad.GAMEPAD_DPAD_RIGHT:
-                    robot.extender.setPower(0.55);
+                    robot.extender.setPower(1.0);
                     break;
                 case FtcGamepad.GAMEPAD_DPAD_LEFT:
-                    robot.extender.setPower(-0.35);
+                    robot.extender.setPower(-0.85);
                      break;
                 case FtcGamepad.GAMEPAD_Y:
                     robot.liftUp();
@@ -78,6 +83,12 @@ public class TeleOp_01_30_19 extends LinearOpMode
                     break;
                 case FtcGamepad.GAMEPAD_LBUMPER:
                     robot.unlockHangLift();
+                    break;
+                case FtcGamepad.GAMEPAD_DPAD_DOWN:
+                    robot.liftDownAuto();
+                    break;
+                case FtcGamepad.GAMEPAD_B:
+                    robot.gateOpen();
                     break;
             }
             //Gamepad 1 Button events
@@ -93,7 +104,6 @@ public class TeleOp_01_30_19 extends LinearOpMode
                     break;
                 case FtcGamepad.GAMEPAD_A:
                     telemetry.addData("shoulder1 pulses", robot.shoulder1.getCurrentPosition());
-                    telemetry.addData("Wrist Position: ", robot.wrist.getPosition());
                     telemetry.addData("extender pulses", robot.extender.getCurrentPosition());
                     telemetry.addData("hang lift pulses", robot.hangLift.getCurrentPosition());
                     telemetry.update();
@@ -103,6 +113,11 @@ public class TeleOp_01_30_19 extends LinearOpMode
             if(!gamepad2.dpad_right && !gamepad2.dpad_left)
             {
                 robot.extender.setPower(0.05);
+            }
+
+            if(!gamepad2.b)
+            {
+                robot.gateClose();
             }
 
             robot.checkIfLifDown();
@@ -119,15 +134,24 @@ public class TeleOp_01_30_19 extends LinearOpMode
                 robot.liftIsDown();
             }
 
+            if(robot.shoulder1.getCurrentPosition() >1000)
+            {
+                //robot.setLEDPattern(RevBlinkinLedDriver.BlinkinPattern.COLOR_WAVES_FOREST_PALETTE);
+            }
+            if(robot.shoulder1.getCurrentPosition() < 1000)
+            {
+                //robot.setLEDPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
+            }
+
             //GAMEPAD 2
             //WHEN JOYSTICK IS MOVED DOWNWARD
-            if(gamepad2.right_stick_y > 0.1 )
+            if(gamepad2.right_stick_y > 0.2 )
             {
                 robot.shoulder1.setPower(-gamepad2.right_stick_y * 0.25);
                 robot.shoulder2.setPower(gamepad2.right_stick_y * 0.25);
             }
             //Shoulder Up
-            else if (gamepad2.right_stick_y < -0.1)
+            else if (gamepad2.right_stick_y < -0.2)
             {
                 telemetry.addData("up", robot.shoulder1.getCurrentPosition());
                 telemetry.update();
@@ -138,27 +162,6 @@ public class TeleOp_01_30_19 extends LinearOpMode
             {
                 robot.shoulder1.setPower(0.05);
                 robot.shoulder2.setPower(-0.05);
-            }
-
-
-            //WRIST ADJUSTMENTS FOR X SHOULDER VALUES
-            /*if(robot.shoulder1.getCurrentPosition() > 1000)
-            {
-                robot.wrist.setPosition(0.50);
-            }
-            if(robot.shoulder1.getCurrentPosition() > 750 && robot.shoulder1.getCurrentPosition() < 900)
-            {
-                robot.wrist.setPosition(.53);
-            }*/
-
-            //WRIST
-            if(gamepad2.left_stick_y > 0.5 && robot.wristPosition > 0)
-            {
-                robot.setWristPosition(robot.wristPosition - 0.005);
-            }
-            if(gamepad2.left_stick_y < -0.5 && robot.wristPosition < 0.5)
-            {
-                robot.setWristPosition(robot.wristPosition + 0.005);
             }
 
 
@@ -178,11 +181,16 @@ public class TeleOp_01_30_19 extends LinearOpMode
             }
 
         }
+
+        //set all to zero
+        robot.stopEverything();
+        sleep(2000);
+
     }
     public void getJoyVals ()
     {
         float gamepad1LeftY = -gamepad1.left_stick_y;
-        float gamepad1LeftX = gamepad1.left_stick_x * (float)(0.5);
+        float gamepad1LeftX = gamepad1.left_stick_x * (float)(0.75);
         float gamepad1RightX = gamepad1.right_stick_x * (float)(0.5);
 
         robot.FLPower = -gamepad1LeftY - gamepad1LeftX - gamepad1RightX;

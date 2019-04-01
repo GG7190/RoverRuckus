@@ -25,8 +25,6 @@ public class TestArmSubsystem extends LinearOpMode
         //Wait for drivers to press play>>
         waitForStart();
 
-        robot.wristPosition = 0.75;
-        robot.wrist.setPosition(robot.wristPosition);
 
 
         while (opModeIsActive())
@@ -65,18 +63,7 @@ public class TestArmSubsystem extends LinearOpMode
                 robot.extender.setPower(0.05);
             }
 
-            telemetry.addData("wrist Position: ", robot.wristPosition);
-            telemetry.update();
 
-            //Move Wrist
-            if(gamepad1.right_stick_y > 0.5 && robot.wristPosition > 0)
-            {
-                robot.setWristPosition(robot.wristPosition -= 0.0005);
-            }
-            if(gamepad1.right_stick_y < -0.5 && robot.wristPosition < 1)
-            {
-                robot.wrist.setPosition(robot.wristPosition += 0.0005 );
-            }
 
             //Spin Collector
             if(gamepad1.right_trigger > 0.05)

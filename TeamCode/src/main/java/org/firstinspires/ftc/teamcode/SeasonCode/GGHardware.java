@@ -40,26 +40,28 @@ public class GGHardware {
     private ElapsedTime runtime = new ElapsedTime();
 
     public DcMotor frontLeft, frontRight, backLeft, backRight, verticalLift, hangLift, shoulder1, shoulder2, extender;
-    public Servo dumper, marker, wrist;
-    public CRServo collector;
+    public Servo marker, gate;
+    public CRServo collector1, collector2;
     public DigitalChannel digitalTouch;
     public RevBlinkinLedDriver blinkinLedDriver;
     public RevBlinkinLedDriver.BlinkinPattern pattern;
 
     public final double deadZone = 0.15;
-    public double wristPosition = 0.00;
     public float FRPower, FLPower, BRPower, BLPower;
-    public double averageEncoderValue, flipperValue, eValue;
-    boolean liftIsMovingUp = false;
-    boolean liftIsUp = false;
+    public double averageEncoderValue, flipperValue, eValue, armPosition;
+    public double SHOULDERMAX = 1750;
+    public double SHOULDERMIN = 200;
+    public boolean liftIsMovingUp = false;
+    public boolean liftIsUp = false;
     public VuforiaLocalizer vuforia;
     public TFObjectDetector tfod;
     public final String VUFORIA_KEY = "AQ2bBhr/////AAABmZ3h5slXFkFNsA2+9NNp7vgLITOJZHq695JcQC+JLV4eNMi5xm9bRVutz//N3w2HmZSHV+VH0sXNGstHLcn+8+RncGp0XNFhhj4xfRLIxpsj+nLydV/LStF4ayEFHhWeW3DCn5HZd+8utzjJXaoGAKnXIQ8w9SOviaPJBA5wXqllQNNowqyLBYMEhchuttTDQsGzw3ckVVbRC8c7q+z6M0lKqRj0CWi4EG6bFtqs96KTjBw2Aq+uemXXEsYcEfGO1lW8fkkya5HQaJJh9GNjy63vXnTmAMTBirPJFjSNb6NQm3Si92Prc/FscOML4lxxaTTwl/7Y96VH6a6FkfD9Ka19NVl61xbKI+Anycnvb+gl";
     public final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";
     public final String LABEL_GOLD_MINERAL = "Gold Mineral";
     public final String LABEL_SILVER_MINERAL = "Silver Mineral";
-    public final int hangLiftUp = -10450;
+    public final int hangLiftUp = -10000;
     public int targetHigh, targetLow, target;
+    public int upDownAction = 0;
     public double Pk = 0.002;
     public boolean flipArmIsMovingUp = false;
     public boolean flipArmIsMovingDown = false;
@@ -115,17 +117,20 @@ public class GGHardware {
 
         //Servos
         marker = hardwareMap.get(Servo.class, "mk");
-        collector = hardwareMap.get(CRServo.class, "clL");
-        wrist = hardwareMap.get(Servo.class, "wr");
+        gate = hardwareMap.get(Servo.class, "gt");
+        collector1 = hardwareMap.get(CRServo.class, "cl1");
+        collector2 = hardwareMap.get(CRServo.class, "cl2");
+
 
         markerUP();
-        collector.setPower(0.0);
-        //wrist.setPosition(0.75);
+        collector1.setPower(0.0);
+        collector2.setPower(0.0);
 
         //Sensors
         digitalTouch = hardwareMap.get(DigitalChannel.class, "ts");
         distanceSensor = hardwareMap.get(DistanceSensor.class, "ds");
         imu = hardwareMap.get(BNO055IMU.class, "imu");
+        armPosition = 0;//More work here!!
 
         //LEDs
         blinkinLedDriver = hardwareMap.get(RevBlinkinLedDriver.class, "bk");
@@ -210,11 +215,19 @@ public class GGHardware {
 
     ////Drive Methods/////////////////
     public void forwBackw(double speed) {
-        frontRight.setPower(speed + 0.05);
-        frontLeft.setPower(-speed);
-        backRight.setPower(speed);
-        backLeft.setPower(-speed);
+        frontRight.setPower(-speed);
+        frontLeft.setPower(speed);
+        backRight.setPower(-speed);
+        backLeft.setPower(speed);
     }
+
+    public void forwBackw(double fR, double fL, double bR, double bL) {
+        frontRight.setPower(-fR);
+        frontLeft.setPower(fL);
+        backRight.setPower(-bR);
+        backLeft.setPower(bL);
+    }
+
 
     public void driftRight(double speed) {
         frontRight.setPower(-speed);
@@ -239,6 +252,7 @@ public class GGHardware {
 
     public void spinLeft(double speed) {
         frontLeft.setPower(speed);
+        frontRight.setPower(speed);
         backRight.setPower(speed);
         backLeft.setPower(speed);
     }
@@ -249,34 +263,26 @@ public class GGHardware {
     //Don't change 0.7 servo cannot handle more than that
     public void spinCollector(String direction) {
         if (direction == "in") {
-            collector.setPower(-0.7);
+            collector1.setPower(-0.7);
+            collector2.setPower(0.7);
         } else {
-            collector.setPower(0.7);
+            collector1.setPower(0.7);
+            collector2.setPower(-0.7);
         }
 
     }
 
-    public void stopCollector() {
-        collector.setPower(0.00);
-    }
-
-    public void setWristPosition(double position) {
-        wristPosition = position;
-        wrist.setPosition(wristPosition);
-    }
-
-    public void setWristManual(String direction) {
-        if (direction == "up") {
-            wristPosition += 0.05;
-            wrist.setPosition(wristPosition);
-        } else {
-            wristPosition -= 0.05;
-            wrist.setPosition(wristPosition);
-        }
+    public void stopCollector()
+    {
+        collector1.setPower(0.00);
+        collector2.setPower(0.00);
     }
 
 
-    ////Marker servo Methods//////x
+
+
+
+    ////Marker servo Methods//////
     public void markerUP() {
         marker.setPosition(0.07);
     }
@@ -286,6 +292,17 @@ public class GGHardware {
     }
     //////////////////////////////
 
+    ////Gate servo Methods///////
+    public void gateOpen()
+    {
+        gate.setPosition(0.5);
+    }
+    public void gateClose()
+    {
+        gate.setPosition(1.00);
+    }
+    /////////////////////////////
+
     ////Lift Up Preset///////////////
     public void liftUp() {
         if (!liftIsUp && hangLift.getCurrentPosition() > hangLiftUp) {
@@ -294,6 +311,15 @@ public class GGHardware {
         }
 
     }
+
+    public void liftDownAuto() {
+        if (!liftIsUp && hangLift.getCurrentPosition() > hangLiftUp) {
+            hangLift.setPower(1.00);
+            liftIsMovingUp = true;
+        }
+
+    }
+
 
     public void liftUpAuto() {
         while (hangLift.getCurrentPosition() > hangLiftUp) {
@@ -333,7 +359,9 @@ public class GGHardware {
     public void liftIsDown()
     {
         liftIsUp = false;
-        resetAndRunWithoutEncoders();
+        stopLift();
+        hangLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        hangLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
     }
 
@@ -366,7 +394,7 @@ public class GGHardware {
         extender.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         while(extender.getCurrentPosition() < pulses)
         {
-            extender.setPower(0.55);
+            extender.setPower(1);
 
         }
         extender.setPower(0.05);
@@ -378,7 +406,7 @@ public class GGHardware {
         extender.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         while(extender.getCurrentPosition() > pulses)
         {
-            extender.setPower(-0.15);
+            extender.setPower(-0.85);
 
         }
         extender.setPower(0.05);
@@ -454,11 +482,12 @@ public class GGHardware {
     //Turns specific amount of degrees
     public void Turn(double speed, double degrees, double timeouSeconds, String direction)
     {
+        runtime.reset();
         while(true) {
             getIMUValues();
             _parameters.BaseOpMode.telemetry.addData("Inside Method ", getAbsoluteAngle());
             _parameters.BaseOpMode.telemetry.update();
-            while (getAbsoluteAngle() < degrees)
+            while (getAbsoluteAngle() < degrees && runtime.seconds() < timeouSeconds )
             {
 
                 if (direction == "spinR")
@@ -519,11 +548,11 @@ public class GGHardware {
             runtime.reset();
             if (direction == "forward")
             {
-                forwBackw(speed);
+                forwBackw(-speed);
             }
             else if (direction == "backward")
             {
-                forwBackw(-speed);
+                forwBackw(speed);
             }
             else if (direction == "driftR")
             {
@@ -556,14 +585,68 @@ public class GGHardware {
         }
     }
 
+    public void DriveAdjustForAngle(double speed, double targetDistance, double timeoutSeconds, String direction) {
+        // Ensure that the opmode is still active
+        if (_parameters.BaseOpMode.opModeIsActive()) {
+            _parameters.BaseOpMode.telemetry.addData("ENCODER VAlUE: ", getEncoderValues());
+            _parameters.BaseOpMode.telemetry.update();
+
+            resetAngle();
+
+            //Set Target Position
+            targetDistance = convertInchesToPulses(targetDistance);
+            //Reset Encoders and Run Without Encoders
+            resetAndRunWithoutEncoders();
+            runtime.reset();
+            if (direction == "forward")
+            {
+                forwBackw(-speed);
+            }
+            else
+            {
+                forwBackw(speed);
+            }
 
 
-    public void driveUsingDistanceSensor()
+            // keep looping while we are still active, and there is time left, and both motors are running.
+            // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
+            // its target position, the motion will stop.  This is "safer" in the event that the robot will
+            // always end the motion as soon as possible.
+            // However, if you require that BOTH motors have finished their moves before the robot continues
+            // onto the next step, use (isBusy() || isBusy()) in the loop test.
+            while (//_parameters.BaseOpMode.opModeIsActive() &&
+                    (runtime.seconds() < timeoutSeconds) &&
+                            getEncoderValues() < targetDistance)
+            {
+                double currentAngle = getAngle();
+                if(currentAngle > 0)
+                {
+                    forwBackw(speed, speed, speed - 0.1, speed - 0.1);
+                }
+                else
+                {
+                    forwBackw(speed - 0.1, speed - 0.1, speed, speed);
+                }
+                sendMessage("" + frontRight.getPower() + " " + frontLeft );
+
+            }
+
+            // Stop all motion;
+            forwBackw(0);
+            //Reset Encoders
+            resetAndRunWithoutEncoders();
+        }
+    }
+
+
+
+    public void driveUsingDistanceSensor(int distance, int timeoutSeconds)
     {
-        driftLeft(1);
+        driftLeft(0.5);
         robotIsMoving = true;
 
-        while(distanceSensor.getDistance(DistanceUnit.INCH) > 12)
+
+        while(distanceSensor.getDistance(DistanceUnit.INCH) > distance && runtime.seconds() < timeoutSeconds)
         {
             _parameters.BaseOpMode.telemetry.addData("distance ", distanceSensor.getDistance(DistanceUnit.INCH) );
             _parameters.BaseOpMode.telemetry.update();
@@ -641,8 +724,19 @@ public class GGHardware {
         globalAngle = 0;
     }
 
+    public void stopEverything()
+    {
+        sendMessage("Inside Stop Everything");
+        forwBackw(0);
+        hangLift.setPower(0);
+        collector1.setPower(0);
+        collector2.setPower(0);
+        shoulder1.setPower(0);
+        shoulder2.setPower(0);
+    }
+
     //Initializes vuforia parameters
-    void initVuforia()
+    public void initVuforia()
     {
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
@@ -658,13 +752,19 @@ public class GGHardware {
     }
 
     //Initialize tensor flow capabilities
-    void initTfod()
+    public void initTfod()
     {
         int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
                 "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_GOLD_MINERAL, LABEL_SILVER_MINERAL);
+    }
+
+    public void sendMessage(String text)
+    {
+        BaseOpMode.telemetry.addData("", text);
+        BaseOpMode.telemetry.update();
     }
 }
 

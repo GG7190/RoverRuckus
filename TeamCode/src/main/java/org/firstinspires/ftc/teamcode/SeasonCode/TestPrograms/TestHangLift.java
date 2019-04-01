@@ -9,8 +9,8 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.teamcode.SeasonCode.GGHardware;
 import org.firstinspires.ftc.teamcode.SeasonCode.GGParameters;
 
-@Autonomous(name = "TestDistanceSensorAuto", group = "Autonomous")
-public class TestDistanceSensorAuto extends LinearOpMode {
+@Autonomous(name = "TestHangLift", group = "Autonomous")
+public class TestHangLift extends LinearOpMode {
 
 
     GGHardware robot = new GGHardware();
@@ -27,11 +27,20 @@ public class TestDistanceSensorAuto extends LinearOpMode {
 
         while (opModeIsActive())
         {
-            robot.driveUsingDistanceSensor(12, 5);
-            stop();
+           if(gamepad1.y)
+           {
+               robot.hangLift.setPower(-1.00);
+           }
+           else if(gamepad1.a)
+           {
+               robot.hangLift.setPower(1.00);
+           }
+           else
+           {
+               robot.hangLift.setPower(0);
+           }
         }
 
     }
 }
-
 

@@ -26,8 +26,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
         robot.resetAndRunWithoutEncoders();
         robot.markerUP();
-        robot.wristPosition = 0.75;
-        robot.wrist.setPosition(robot.wristPosition);
+        //robot.wristPosition = 0.75;
+        //robot.wrist.setPosition(robot.wristPosition);
         robot.pattern = RevBlinkinLedDriver.BlinkinPattern.RAINBOW_FOREST_PALETTE;
         robot.blinkinLedDriver.setPattern(robot.pattern);
         robot.shoulder1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -49,7 +49,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
             telemetry.addData("shoulder1 pulses", robot.shoulder1.getCurrentPosition());
             telemetry.addData("Distnace: ", robot.distanceSensor.getDistance(DistanceUnit.INCH));
             telemetry.addData("Pk value:", robot.Pk);
-            telemetry.addData("Wrist Position: ", robot.wrist.getPosition());
+            //telemetry.addData("Wrist Position: ", robot.wrist.getPosition());
             telemetry.addData("Manual? ", robot.manual);
             telemetry.update();
 
@@ -113,8 +113,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
                 robot.blinkinLedDriver.setPattern(robot.pattern);
 
                 robot.flipArm(robot.p4);
-                robot.wristPosition = 0.15;
-                robot.wrist.setPosition(robot.wristPosition);
+                //robot.wristPosition = 0.15;
+                //robot.wrist.setPosition(robot.wristPosition);
             }
 
             //Move shoulder1 to 1st position
@@ -124,8 +124,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
                 robot.blinkinLedDriver.setPattern(robot.pattern);
 
                 robot.flipArm(robot.p1);
-                robot.wristPosition = 0.75;
-                robot.wrist.setPosition(robot.wristPosition);
+                //robot.wristPosition = 0.75;
+                //robot.wrist.setPosition(robot.wristPosition);
             }
 
             //Move Flipper to 2nd position
@@ -135,8 +135,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
                 robot.blinkinLedDriver.setPattern(robot.pattern);
 
                 robot.flipArm(robot.p2);
-                robot.wristPosition = 0.750;
-                robot.wrist.setPosition(robot.wristPosition);
+                //robot.wristPosition = 0.750;
+                //robot.wrist.setPosition(robot.wristPosition);
 
             }
 
@@ -147,8 +147,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
                 robot.blinkinLedDriver.setPattern(robot.pattern);
 
                 robot.flipArm(robot.p3);
-                robot.wristPosition = 0.6;
-                robot.wrist.setPosition(robot.wristPosition);
+                //robot.wristPosition = 0.6;
+                //robot.wrist.setPosition(robot.wristPosition);
             }
 
             if(robot.movingTopP4 || robot.movingToP3 || robot.movingToP2 || robot.movingToP1)
@@ -211,7 +211,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
                 }
 
 
-                    if(gamepad2.right_stick_y > 0.5 && robot.wristPosition > 0)
+                    /*if(gamepad2.right_stick_y > 0.5 && robot.wristPosition > 0)
                     {
                         robot.wristPosition -= 0.05;
                         robot.wrist.setPosition(robot.wristPosition);
@@ -220,7 +220,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
                     {
                         robot.wristPosition += 0.05;
                         robot.wrist.setPosition(robot.wristPosition);
-                    }
+                    }*/
 
                     if(gamepad2.x)
                     {

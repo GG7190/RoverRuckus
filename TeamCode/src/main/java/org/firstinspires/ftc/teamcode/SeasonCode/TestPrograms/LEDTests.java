@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.SeasonCode.GGParameters;
 
 
 @Autonomous(name = "LEDTests", group = "Autonomous")
-@Disabled
+
 public class LEDTests extends LinearOpMode
 {
     GGHardware robot = new GGHardware();
