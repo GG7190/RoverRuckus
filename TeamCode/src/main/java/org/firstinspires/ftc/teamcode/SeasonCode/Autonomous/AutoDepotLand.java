@@ -72,11 +72,12 @@ public class AutoDepotLand extends LinearOpMode{
             //Turn lights gold if a location of the gold mineral was found
             if(goldMineralLocation != null)
             {
-                robot.pattern = RevBlinkinLedDriver.BlinkinPattern.GOLD;
-                robot.blinkinLedDriver.setPattern(robot.pattern);
+                //robot.pattern = RevBlinkinLedDriver.BlinkinPattern.GOLD;
+                //robot.blinkinLedDriver.setPattern(robot.pattern);
             }
 
             //land
+            robot.shoulderUpAuto(200);
             robot.liftUpAuto();
             telemetry.addData("liftpulses: ", robot.hangLift.getCurrentPosition());
             telemetry.update();
@@ -84,9 +85,7 @@ public class AutoDepotLand extends LinearOpMode{
 
             //Center robot in front of lander
             centerRobot();
-
-            //Reset robot's angular position to 0 degrees
-            //robot.turnTo(0.00);
+            placeMarker();
 
 
 
@@ -94,7 +93,6 @@ public class AutoDepotLand extends LinearOpMode{
             knockOffMineral(goldMineralLocation);
 
             alignToWall();
-            placeMarker();
 
             //Find wall and line up parallel to it
             //alignToWall();
@@ -184,53 +182,44 @@ public class AutoDepotLand extends LinearOpMode{
     public void centerRobot()
     {
         //center robot in front of lander
-        robot.shoulderUpAuto(200);
-        robot.Drive(0.5, 4, 3, "driftR");
-        robot.Drive(0.5, 5, 3, "forward");
-        robot.Drive(0.5, 2.5, 3, "driftL");
+
+        robot.Drive(0.5, 2, 3, "driftR");
+        robot.Drive(0.5, 8, 3, "forward");
+        robot.Drive(0.5, 1.5, 3, "driftL");
         //robot.Drive(0.35, 9, 3, "forward");
     }
 
     public void collectMineralCenter()
     {
-        robot.shoulderUpAuto(150);
-        robot.extendOutAuto(1200);
+        robot.extendOutAuto(950);
         telemetry.addData("extender pulses", robot.extender.getCurrentPosition());
         telemetry.update();
         robot.spinCollector("out");
-        sleep(3000);
+        sleep(500);
         robot.stopCollector();
         robot.extendInAuto(0);
     }
     public void collectMineralLeft()
     {
-        telemetry.addData("ShoulderPulses: ", robot.shoulder1.getCurrentPosition());
-        telemetry.update();
-        robot.shoulderUpAuto(200);
-        robot.Turn(0.25,33,3,"spinL");
-        robot.extendOutAuto(1900);
+        robot.Drive(0.5, 7, 8, "driftL");
+        robot.extendOutAuto(950);
         telemetry.addData("extender pulses", robot.extender.getCurrentPosition());
         telemetry.update();
         robot.spinCollector("out");
-        sleep(3000);
+        sleep(500);
         robot.stopCollector();
         robot.extendInAuto(0);
-        robot.Turn(0.25,33,3,"spinR");
+        robot.Drive(0.5, 8, 8, "driftR");
     }
     public void collectMineralRight()
     {
-        telemetry.addData("ShoulderPulses: ", robot.shoulder1.getCurrentPosition());
-        telemetry.update();
-        robot.shoulderUpAuto(200);
-        robot.Turn(0.25,35,3,"spinR");
-        robot.extendOutAuto(2100);
-        telemetry.addData("extender pulses", robot.extender.getCurrentPosition());
-        telemetry.update();
+        robot.Drive(0.5, 7, 8, "driftR");
+        robot.extendOutAuto(950);
         robot.spinCollector("out");
-        sleep(3000);
+        sleep(500);
         robot.stopCollector();
         robot.extendInAuto(0);
-        robot.Turn(0.25,35,3,"spinL");
+        robot.Drive(0.5, 7, 8, "driftL");
     }
     public void knockOffMineral(String locationOfGold)
     {
@@ -253,26 +242,28 @@ public class AutoDepotLand extends LinearOpMode{
     {
         //robot.Drive(0.55,1,3, "forward");
         robot.Drive(0.55,20, 10, "driftL");
-        robot.Turn(0.25,45,3,"spinR");
-        robot.driveUsingDistanceSensor(9, 5);
-        robot.pattern = RevBlinkinLedDriver.BlinkinPattern.RED;
+        robot.Turn(0.25,47,3,"spinR");
+        robot.driveUsingDistanceSensor(14, 5);
+        robot.Drive(0.25,4, 2, "backward");
+        robot.markerDown();
+        robot.liftDownAuto();
+
+        /*robot.pattern = RevBlinkinLedDriver.BlinkinPattern.RED;
         robot.blinkinLedDriver.setPattern(robot.pattern);
-        robot.Turn(0.5,178,5, "spinL");
+        robot.Turn(0.5,178,5, "spinL");*/
     }
 
 
     public void placeMarker()
     {
 
-        robot.Drive(0.5,25,5, "backward");
-        robot.markerDown();
-        sleep(1000);
-        robot.markerUP();
-        robot.Turn(0.25, 35,5,"spinR");
-        /*robot.Drive(0.75, 28,5, "forward");
-        robot.shoulderUpAuto(400);
-        robot.extendOutAuto(1900);
-        sleep(5000);*/
+        robot.shoulderUpFarAuto(500);
+        robot.extendOutAuto(2400);
+        robot.spinCollector("in");
+        sleep(2500);
+        robot.stopCollector();
+        robot.extendInAuto(0);
+        robot.shoulderDownAuto(200);
 
     }
 

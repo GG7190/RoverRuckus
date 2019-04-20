@@ -74,6 +74,7 @@ public class AutoCraterLand2 extends LinearOpMode {
             }
 
             //land
+            robot.shoulderUpAuto(100);
             robot.liftUpAuto();
 
             telemetry.addData("liftpulses: ", robot.hangLift.getCurrentPosition());
@@ -92,7 +93,7 @@ public class AutoCraterLand2 extends LinearOpMode {
             knockOffMineral(goldMineralLocation);
 
             alignToWall();
-           // placeMarker();
+            placeMarker();
 
             //turn lights off
             //robot.pattern = RevBlinkinLedDriver.BlinkinPattern.BLACK;
@@ -188,17 +189,17 @@ public class AutoCraterLand2 extends LinearOpMode {
     public void centerRobot()
     {
         //center robot in front of lander
-        robot.shoulderUpAuto(200);
+
         robot.Drive(0.5, 1, 3, "driftR");
-        robot.Drive(0.5, 7, 3, "forward");
-        robot.Drive(0.5, 1, 3, "driftL");
+        robot.Drive(0.5, 8, 3, "forward");
+        robot.Drive(0.5, 1.5, 3, "driftL");
         //robot.Drive(0.35, 9, 3, "forward");
     }
 
     public void collectMineralCenter()
     {
         //robot.shoulderUpAuto(150);
-        robot.extendOutAuto(1500);
+        robot.extendOutAuto(950);
         telemetry.addData("extender pulses", robot.extender.getCurrentPosition());
         telemetry.update();
         robot.spinCollector("out");
@@ -213,7 +214,7 @@ public class AutoCraterLand2 extends LinearOpMode {
         //robot.shoulderUpAuto(200);
         //robot.Turn(0.25,33,3,"spinL");
         robot.Drive(0.5, 8, 8, "driftL");
-        robot.extendOutAuto(1500);
+        robot.extendOutAuto(950);
         telemetry.addData("extender pulses", robot.extender.getCurrentPosition());
         telemetry.update();
         robot.spinCollector("out");
@@ -227,9 +228,8 @@ public class AutoCraterLand2 extends LinearOpMode {
         telemetry.addData("ShoulderPulses: ", robot.shoulder1.getCurrentPosition());
         telemetry.update();
         //robot.shoulderUpAuto(200);
-        robot.Drive(0.5, 9, 8, "driftR");
-        //robot.stopCollector();
-        robot.extendOutAuto(1500);
+        robot.Drive(0.5, 7, 8, "driftR");
+        robot.extendOutAuto(950);
         robot.spinCollector("out");
         sleep(500);
         robot.stopCollector();
@@ -261,8 +261,8 @@ public class AutoCraterLand2 extends LinearOpMode {
     {
         //robot.Drive(0.55,1,3, "forward");
         robot.Drive(0.55,20, 10, "driftL");
-        robot.Turn(0.25,45,3,"spinR");
-        robot.driveUsingDistanceSensor(7,5);
+        robot.Turn(0.25,42,3,"spinR");
+        robot.driveUsingDistanceSensor(8,5);
 
 
     }
@@ -270,14 +270,14 @@ public class AutoCraterLand2 extends LinearOpMode {
 
     public void placeMarker()
     {
-        robot.DriveAdjustForAngle(0.5, 20, 10, "backward");
+        robot.DriveAdjustForAngle(0.5, 22, 10, "backward");
         robot.markerDown();
         sleep(1000);
         robot.markerUP();
-        robot.DriveAdjustForAngle(0.5, 20, 10, "forward");
-        /*robot.shoulderUpAuto(400);
+        robot.Drive(0.5, 30, 10, "forward");
+        robot.shoulderUpAuto(400);
         robot.extendOutAuto(1900);
-        sleep(5000);*/
+        sleep(5000);
 
     }
 }

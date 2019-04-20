@@ -67,7 +67,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
             //Preset for lift moving up
             if (gamepad2.dpad_up)
             {
-                    robot.liftUp();
+                    robot.liftUpTeleOpAuto();
 
             }
 
@@ -82,7 +82,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
             //Bring hang lift down
             if (gamepad2.dpad_down)
             {
-                robot.liftDown();
+                robot.liftDownTeleOpManual();
             }
 
             //If d_pad down is not pressed and the hanf lift is not already moving, stop hang lift

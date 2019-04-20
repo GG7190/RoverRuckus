@@ -59,7 +59,7 @@ public class GGHardware {
     public final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";
     public final String LABEL_GOLD_MINERAL = "Gold Mineral";
     public final String LABEL_SILVER_MINERAL = "Silver Mineral";
-    public final int hangLiftUp = -10000;
+    public final int hangLiftUp = -10700;
     public int targetHigh, targetLow, target;
     public int upDownAction = 0;
     public double Pk = 0.002;
@@ -123,6 +123,7 @@ public class GGHardware {
 
 
         markerUP();
+        gateMid();
         collector1.setPower(0.0);
         collector2.setPower(0.0);
 
@@ -263,11 +264,11 @@ public class GGHardware {
     //Don't change 0.7 servo cannot handle more than that
     public void spinCollector(String direction) {
         if (direction == "in") {
-            collector1.setPower(-0.7);
-            collector2.setPower(0.7);
-        } else {
             collector1.setPower(0.7);
             collector2.setPower(-0.7);
+        } else {
+            collector1.setPower(-0.7);
+            collector2.setPower(0.7);
         }
 
     }
@@ -297,6 +298,10 @@ public class GGHardware {
     {
         gate.setPosition(0.5);
     }
+    public void gateMid()
+    {
+        gate.setPosition(.76);
+    }
     public void gateClose()
     {
         gate.setPosition(1.00);
@@ -304,18 +309,52 @@ public class GGHardware {
     /////////////////////////////
 
     ////Lift Up Preset///////////////
-    public void liftUp() {
-        if (!liftIsUp && hangLift.getCurrentPosition() > hangLiftUp) {
+    public void liftUpTeleOpAuto()
+    {
+        if (!liftIsUp && hangLift.getCurrentPosition() > hangLiftUp)
+        {
             hangLift.setPower(-1.00);
             liftIsMovingUp = true;
         }
 
     }
 
-    public void liftDownAuto() {
-        if (!liftIsUp && hangLift.getCurrentPosition() > hangLiftUp) {
+    ////Lift Up Manual////////////////
+    public void liftUpTeleOpManual()
+    {
+        if(hangLift.getCurrentPosition() > -12000)
+        {
+            hangLift.setPower(-1.00);
+        }
+    }
+
+    public void liftDownAuto()
+    {
+        while(digitalTouch.getState())
+        {
+            hangLift.setPower(1.00);
+        }
+        hangLift.setPower(0.00);
+    }
+
+    ////Lift Down Preset//////////////
+    public void liftDownTeleOpAuto()
+    {
+        if (!liftIsUp && hangLift.getCurrentPosition() > hangLiftUp)
+        {
             hangLift.setPower(1.00);
             liftIsMovingUp = true;
+        }
+
+    }
+
+    ////Lift Down////////////////////
+    public void liftDownTeleOpManual()
+    {
+        if (digitalTouch.getState())
+        {
+            hangLift.setPower(1.00);
+
         }
 
     }
@@ -337,16 +376,9 @@ public class GGHardware {
         //liftIsUp = true;
     }
 
-    ////Lift Down////////////////////
-    public void liftDown() {
-        if (digitalTouch.getState()) {
-            hangLift.setPower(1.00);
 
-        }
 
-    }
-
-    public void checkIfLifDown()
+    public void checkIfLiftDown()
     {
         if (hangLift.getCurrentPosition() < hangLiftUp && liftIsMovingUp == true)
         {
@@ -379,14 +411,38 @@ public class GGHardware {
 
     public void shoulderUpAuto(int pulses)
     {
-        shoulder1.setPower(0.35);
-        shoulder2.setPower(-0.35);
+        shoulder1.setPower(0.55);
+        shoulder2.setPower(-0.55);
         while(shoulder1.getCurrentPosition() < pulses)
         {
 
         }
         shoulder1.setPower(0.05);
         shoulder2.setPower(-0.05);
+    }
+
+    public void shoulderDownAuto(int pulses)
+    {
+        shoulder1.setPower(-0.55);
+        shoulder2.setPower(0.55);
+        while(shoulder1.getCurrentPosition() > pulses)
+        {
+
+        }
+        shoulder1.setPower(0.05);
+        shoulder2.setPower(-0.05);
+    }
+
+    public void shoulderUpFarAuto(int pulses)
+    {
+        shoulder1.setPower(0.55);
+        shoulder2.setPower(-0.55);
+        while(shoulder1.getCurrentPosition() < pulses)
+        {
+
+        }
+        shoulder1.setPower(0.1);
+        shoulder2.setPower(-0.1);
     }
 
     public void extendOutAuto(int pulses)
@@ -400,6 +456,8 @@ public class GGHardware {
         extender.setPower(0.05);
         extender.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
+
+
 
     public void extendInAuto(int pulses)
     {
@@ -621,13 +679,19 @@ public class GGHardware {
                 double currentAngle = getAngle();
                 if(currentAngle > 0)
                 {
-                    forwBackw(speed, speed, speed - 0.1, speed - 0.1);
+                    forwBackw(speed - 0.005, speed, speed - 0.005, speed);
                 }
-                else
+                 if( currentAngle < 0)
                 {
-                    forwBackw(speed - 0.1, speed - 0.1, speed, speed);
+
+
+                    forwBackw(speed, speed - 0.005, speed, speed - 0.005);
                 }
-                sendMessage("" + frontRight.getPower() + " " + frontLeft );
+                /*else
+                {
+                    forwBackw(speed);
+                }*/
+                sendMessage("" + frontRight.getPower() + " " + frontLeft.getPower() );
 
             }
 
@@ -642,7 +706,7 @@ public class GGHardware {
 
     public void driveUsingDistanceSensor(int distance, int timeoutSeconds)
     {
-        driftLeft(0.5);
+        driftLeft(0.35);
         robotIsMoving = true;
 
 

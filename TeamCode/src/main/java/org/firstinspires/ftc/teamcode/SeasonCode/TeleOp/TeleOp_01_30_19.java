@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.SeasonCode.TeleOp;
 
-import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -66,17 +64,27 @@ public class TeleOp_01_30_19 extends LinearOpMode
             switch(ftcGamepad.getButtons(gamepad2))
             {
 
+
+                case FtcGamepad.GAMEPAD_A:
+                    robot.liftDownTeleOpManual();
+                    break;
+                case FtcGamepad.GAMEPAD_Y:
+                    robot.liftUpTeleOpAuto();
+                    break;
+                case FtcGamepad.GAMEPAD_DPAD_UP:
+                    robot.liftUpTeleOpManual();
+                    break;
                 case FtcGamepad.GAMEPAD_DPAD_RIGHT:
                     robot.extender.setPower(1.0);
                     break;
                 case FtcGamepad.GAMEPAD_DPAD_LEFT:
                     robot.extender.setPower(-0.85);
-                     break;
-                case FtcGamepad.GAMEPAD_Y:
-                    robot.liftUp();
                     break;
-                case FtcGamepad.GAMEPAD_A:
-                    robot.liftDown();
+                case FtcGamepad.GAMEPAD_B:
+                    robot.gateOpen();
+                    break;
+                case FtcGamepad.GAMEPAD_X:
+                    robot.gateClose();
                     break;
                 case FtcGamepad.GAMEPAD_RBUMPER:
                     robot.lockHangLift();
@@ -84,22 +92,16 @@ public class TeleOp_01_30_19 extends LinearOpMode
                 case FtcGamepad.GAMEPAD_LBUMPER:
                     robot.unlockHangLift();
                     break;
-                case FtcGamepad.GAMEPAD_DPAD_DOWN:
-                    robot.liftDownAuto();
-                    break;
-                case FtcGamepad.GAMEPAD_B:
-                    robot.gateOpen();
-                    break;
             }
             //Gamepad 1 Button events
             switch(ftcGamepad.getButtons(gamepad1))
             {
-                case FtcGamepad.GAMEPAD_RBUMPER:
+                case FtcGamepad.GAMEPAD_X:
                     robot.markerUP();
                     telemetry.addData("markerUpFunction: ",robot.marker.getPosition());
                     telemetry.update();
                     break;
-                case FtcGamepad.GAMEPAD_LBUMPER:
+                case FtcGamepad.GAMEPAD_B:
                     robot.markerDown();
                     break;
                 case FtcGamepad.GAMEPAD_A:
@@ -108,6 +110,9 @@ public class TeleOp_01_30_19 extends LinearOpMode
                     telemetry.addData("hang lift pulses", robot.hangLift.getCurrentPosition());
                     telemetry.update();
                     break;
+                case FtcGamepad.GAMEPAD_DPAD_DOWN:
+                    robot.liftDownTeleOpAuto();
+                    break;
             }
             //If cases for dpad_left and d_pad right are not met turn off extender
             if(!gamepad2.dpad_right && !gamepad2.dpad_left)
@@ -115,12 +120,12 @@ public class TeleOp_01_30_19 extends LinearOpMode
                 robot.extender.setPower(0.05);
             }
 
-            if(!gamepad2.b)
+            if(!gamepad2.b && !gamepad2.x)
             {
-                robot.gateClose();
+                robot.gateMid();
             }
 
-            robot.checkIfLifDown();
+            robot.checkIfLiftDown();
 
             //IF D_PAD IS NOT ALREADY PRESSED AND HANG LIFT IS NOT MOVING UP STOP HANG LIFT
             if (!gamepad2.a && !robot.liftIsMovingUp)
@@ -155,8 +160,8 @@ public class TeleOp_01_30_19 extends LinearOpMode
             {
                 telemetry.addData("up", robot.shoulder1.getCurrentPosition());
                 telemetry.update();
-                robot.shoulder1.setPower(-gamepad2.right_stick_y * 0.6);
-                robot.shoulder2.setPower(gamepad2.right_stick_y * 0.6);
+                robot.shoulder1.setPower(-gamepad2.right_stick_y);
+                robot.shoulder2.setPower(gamepad2.right_stick_y);
             }
             else
             {
@@ -168,12 +173,12 @@ public class TeleOp_01_30_19 extends LinearOpMode
             //SPIN COLLECTOR
             if(gamepad2.right_trigger > 0.05)
             {
-                robot.spinCollector("out");
+                robot.spinCollector("in");
             }
 
             else if(gamepad2.left_trigger > 0.05)
             {
-                robot.spinCollector("in");
+                robot.spinCollector("out");
             }
             else
             {
