@@ -22,17 +22,18 @@ public class AutoCraterLand2 extends LinearOpMode {
 
     public void runOpMode() {
 
+        //Init Everthing
         GGParameters ggparameters = new GGParameters(this);
         robot.init(ggparameters);
         robot.initVuforia();
         robot.initTfod();
-
         robot.pattern = RevBlinkinLedDriver.BlinkinPattern.BLACK;
         robot.blinkinLedDriver.setPattern(robot.pattern);
         robot.hangLift.setPower(0.05);
         robot.pattern = RevBlinkinLedDriver.BlinkinPattern.LARSON_SCANNER_RED;
         robot.blinkinLedDriver.setPattern(robot.pattern);
 
+        //Init Tensor Flow
         if (robot.tfod != null)
         {
             robot.tfod.activate();
@@ -47,13 +48,14 @@ public class AutoCraterLand2 extends LinearOpMode {
 
         while (opModeIsActive())
         {
-
+            //Reset Encoders
             robot.extender.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             robot.extender.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             robot.shoulder1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             robot.shoulder1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             robot.hangLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             robot.hangLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
             //Find Gold Mineral//
             String goldMineralLocation =  checkMinerals();
 
@@ -74,9 +76,8 @@ public class AutoCraterLand2 extends LinearOpMode {
             }
 
             //land
-            robot.shoulderUpAuto(100);
+            robot.shoulderUpAuto(200);
             robot.liftUpAuto();
-
             telemetry.addData("liftpulses: ", robot.hangLift.getCurrentPosition());
             telemetry.update();
 
@@ -84,29 +85,18 @@ public class AutoCraterLand2 extends LinearOpMode {
             //Center robot in front of lander
             centerRobot();
 
-            //Reset robot's angular position to 0 degrees
-            //robot.turnTo(0.00);
-
-
-
             //Run sequence to knock of mineral depending on the location of the gold
             knockOffMineral(goldMineralLocation);
 
-            alignToWall();
-            placeMarker();
-
-            //turn lights off
-            //robot.pattern = RevBlinkinLedDriver.BlinkinPattern.BLACK;
-            //robot.blinkinLedDriver.setPattern(robot.pattern);
-
             //Find wall and line up parallel to it
-            //alignToWall();
+            alignToWall();
+
+            //Place marker using marker slide
+            placeMarker();
 
             //Stop and end program
             robot.stopEverything();
             stop();
-
-
 
 
 
@@ -116,6 +106,7 @@ public class AutoCraterLand2 extends LinearOpMode {
 
     public String checkMinerals()
     {
+        //Decide where the gold Mineral is based on two in camera view
         List<Recognition> updatedRecognitions = robot.tfod.getUpdatedRecognitions();
         if (updatedRecognitions == null) {
 
@@ -189,16 +180,14 @@ public class AutoCraterLand2 extends LinearOpMode {
     public void centerRobot()
     {
         //center robot in front of lander
-
         robot.Drive(0.5, 1, 3, "driftR");
         robot.Drive(0.5, 8, 3, "forward");
         robot.Drive(0.5, 1.5, 3, "driftL");
-        //robot.Drive(0.35, 9, 3, "forward");
     }
 
     public void collectMineralCenter()
     {
-        //robot.shoulderUpAuto(150);
+        //Knock off mineral in the center
         robot.extendOutAuto(950);
         telemetry.addData("extender pulses", robot.extender.getCurrentPosition());
         telemetry.update();
@@ -209,10 +198,7 @@ public class AutoCraterLand2 extends LinearOpMode {
     }
     public void collectMineralLeft()
     {
-        telemetry.addData("ShoulderPulses: ", robot.shoulder1.getCurrentPosition());
-        telemetry.update();
-        //robot.shoulderUpAuto(200);
-        //robot.Turn(0.25,33,3,"spinL");
+        //Drift left and knock off left mineral
         robot.Drive(0.5, 8, 8, "driftL");
         robot.extendOutAuto(950);
         telemetry.addData("extender pulses", robot.extender.getCurrentPosition());
@@ -225,9 +211,9 @@ public class AutoCraterLand2 extends LinearOpMode {
     }
     public void collectMineralRight()
     {
+        //Drift right and knock off right mineral
         telemetry.addData("ShoulderPulses: ", robot.shoulder1.getCurrentPosition());
         telemetry.update();
-        //robot.shoulderUpAuto(200);
         robot.Drive(0.5, 7, 8, "driftR");
         robot.extendOutAuto(950);
         robot.spinCollector("out");
@@ -242,6 +228,7 @@ public class AutoCraterLand2 extends LinearOpMode {
 
     public void knockOffMineral(String locationOfGold)
     {
+        //Interpret what string the method locationOfGold returns based on what the camera sees
         if(locationOfGold == "right")
         {
             collectMineralRight();
@@ -259,17 +246,16 @@ public class AutoCraterLand2 extends LinearOpMode {
 
     public void alignToWall()
     {
-        //robot.Drive(0.55,1,3, "forward");
+        //Align to be parallel with outside wall
         robot.Drive(0.55,20, 10, "driftL");
         robot.Turn(0.25,42,3,"spinR");
         robot.driveUsingDistanceSensor(8,5);
-
-
     }
 
 
     public void placeMarker()
     {
+        //Place marker by extending over minerals and dropping markers
         robot.DriveAdjustForAngle(0.5, 22, 10, "backward");
         robot.markerDown();
         sleep(1000);

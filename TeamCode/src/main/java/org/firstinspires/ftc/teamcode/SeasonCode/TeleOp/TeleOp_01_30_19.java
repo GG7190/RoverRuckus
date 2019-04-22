@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.SeasonCode.TeleOp;
 
+import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -141,11 +142,11 @@ public class TeleOp_01_30_19 extends LinearOpMode
 
             if(robot.shoulder1.getCurrentPosition() >1000)
             {
-                //robot.setLEDPattern(RevBlinkinLedDriver.BlinkinPattern.COLOR_WAVES_FOREST_PALETTE);
+                robot.setLEDPattern(RevBlinkinLedDriver.BlinkinPattern.COLOR_WAVES_FOREST_PALETTE);
             }
             if(robot.shoulder1.getCurrentPosition() < 1000)
             {
-                //robot.setLEDPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
+                robot.setLEDPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
             }
 
             //GAMEPAD 2

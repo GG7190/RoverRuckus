@@ -39,6 +39,10 @@ public class TestHangLift extends LinearOpMode {
            {
                robot.hangLift.setPower(0);
            }
+           if(gamepad1.dpad_down)
+           {
+               robot.liftDownAuto();
+           }
         }
 
     }

@@ -135,6 +135,8 @@ public class GGHardware {
 
         //LEDs
         blinkinLedDriver = hardwareMap.get(RevBlinkinLedDriver.class, "bk");
+        pattern = RevBlinkinLedDriver.BlinkinPattern.GREEN;
+        blinkinLedDriver.setPattern(pattern);
 
 
     }
@@ -285,7 +287,7 @@ public class GGHardware {
 
     ////Marker servo Methods//////
     public void markerUP() {
-        marker.setPosition(0.07);
+        marker.setPosition(0.15);
     }
 
     public void markerDown() {
@@ -431,6 +433,18 @@ public class GGHardware {
         }
         shoulder1.setPower(0.05);
         shoulder2.setPower(-0.05);
+    }
+
+    public void shoulderDownFarAuto(int pulses)
+    {
+        shoulder1.setPower(-0.35);
+        shoulder2.setPower(0.35);
+        while(shoulder1.getCurrentPosition() > pulses)
+        {
+
+        }
+        shoulder1.setPower(0.1);
+        shoulder2.setPower(-0.1);
     }
 
     public void shoulderUpFarAuto(int pulses)
