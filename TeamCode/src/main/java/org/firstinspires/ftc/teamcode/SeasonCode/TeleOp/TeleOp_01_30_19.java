@@ -36,7 +36,7 @@ public class TeleOp_01_30_19 extends LinearOpMode
         robot.shoulder2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         robot.hangLift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        //robot.setLEDPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
+        robot.setLEDPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
 
         //waitForStart();
 
@@ -109,6 +109,10 @@ public class TeleOp_01_30_19 extends LinearOpMode
                     telemetry.addData("shoulder1 pulses", robot.shoulder1.getCurrentPosition());
                     telemetry.addData("extender pulses", robot.extender.getCurrentPosition());
                     telemetry.addData("hang lift pulses", robot.hangLift.getCurrentPosition());
+                    telemetry.addData("wheelfr: ", robot.frontRight.getCurrentPosition());
+                    telemetry.addData("wheelfl: ", robot.frontLeft.getCurrentPosition());
+                    telemetry.addData("wheelbr: ", robot.backRight.getCurrentPosition());
+                    telemetry.addData("wheelbl: ", robot.backLeft.getCurrentPosition());
                     telemetry.update();
                     break;
                 case FtcGamepad.GAMEPAD_DPAD_DOWN:
@@ -140,11 +144,16 @@ public class TeleOp_01_30_19 extends LinearOpMode
                 robot.liftIsDown();
             }
 
-            if(robot.shoulder1.getCurrentPosition() >1000)
+            if(robot.collector2.getPower() > 0 || robot.collector2.getPower() < 0 )
             {
-                robot.setLEDPattern(RevBlinkinLedDriver.BlinkinPattern.COLOR_WAVES_FOREST_PALETTE);
+                robot.setLEDPattern(RevBlinkinLedDriver.BlinkinPattern.RAINBOW_PARTY_PALETTE);
             }
-            if(robot.shoulder1.getCurrentPosition() < 1000)
+            else if(robot.shoulder1.getCurrentPosition() > 1000)
+            {
+                robot.setLEDPattern(RevBlinkinLedDriver.BlinkinPattern.BLUE_GREEN);
+            }
+
+            else
             {
                 robot.setLEDPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
             }
@@ -185,6 +194,7 @@ public class TeleOp_01_30_19 extends LinearOpMode
             {
                 robot.stopCollector();
             }
+
 
         }
 

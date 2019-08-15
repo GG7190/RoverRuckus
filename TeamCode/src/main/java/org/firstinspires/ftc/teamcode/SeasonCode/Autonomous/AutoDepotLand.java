@@ -41,7 +41,11 @@ public class AutoDepotLand extends LinearOpMode{
         }
 
         //Wait for drivers to press play>>
-        waitForStart();
+        //waitForStart();
+        while(!opModeIsActive() && !isStopRequested() )
+        {
+            robot.sendMessage("Waiting for start command");
+        }
 
         //reset all encoders
         robot.resetAndRunWithoutEncoders();
@@ -182,45 +186,45 @@ public class AutoDepotLand extends LinearOpMode{
     public void centerRobot()
     {
         //center robot in front of lander
-        robot.Drive(0.5, 2, 3, "driftR");
-        robot.Drive(0.5, 8, 3, "forward");
-        robot.Drive(0.5, 1, 3, "driftL");
+        robot.Drive(0.5, 4, 3, "driftR"); //4
+        robot.Drive(0.5, 16, 3, "forward");//16
+        robot.Drive(0.5, 4, 3, "driftL"); //3
     }
 
     public void collectMineralCenter()
     {
         //Knock of Center Mineral
-        robot.extendOutAuto(950);
+        robot.extendOutAuto(1200);
         telemetry.addData("extender pulses", robot.extender.getCurrentPosition());
         telemetry.update();
         robot.spinCollector("out");
-        sleep(500);
+        sleep(1500);
         robot.stopCollector();
         robot.extendInAuto(0);
     }
     public void collectMineralLeft()
     {
         //Drift left and knock off left mineral
-        robot.Drive(0.5, 7, 8, "driftL");
-        robot.extendOutAuto(950);
+        robot.Drive(0.5, 12, 8, "driftL"); //14
+        robot.extendOutAuto(1400);
         telemetry.addData("extender pulses", robot.extender.getCurrentPosition());
         telemetry.update();
         robot.spinCollector("out");
-        sleep(500);
+        sleep(1500);
         robot.stopCollector();
         robot.extendInAuto(0);
-        robot.Drive(0.5, 8, 8, "driftR");
+        robot.Drive(0.5, 16, 8, "driftR"); //16
     }
     public void collectMineralRight()
     {
         //Drift right and knock off right mineral
-        robot.Drive(0.5, 7, 8, "driftR");
-        robot.extendOutAuto(1200);
+        robot.Drive(0.5, 16, 8, "driftR"); //16
+        robot.extendOutAuto(1400);
         robot.spinCollector("out");
-        sleep(500);
+        sleep(1500);
         robot.stopCollector();
         robot.extendInAuto(0);
-        robot.Drive(0.5, 7, 8, "driftL");
+        robot.Drive(0.5, 16, 8, "driftL"); //16
     }
     public void knockOffMineral(String locationOfGold)
     {
@@ -243,12 +247,12 @@ public class AutoDepotLand extends LinearOpMode{
     public void alignToWall()
     {
         //Align to be parallel with outside wall
-        robot.Drive(0.55,20, 10, "driftL");
+        robot.Drive(0.55,30, 10, "driftL");//30
         robot.Turn(0.25,47,3,"spinR");
-        robot.driveUsingDistanceSensor(14, 5);
-        robot.Drive(0.25,6, 2, "backward");
+        robot.driveUsingDistanceSensor(8, 5);
+        robot.Drive(0.25,24, 4, "backward"); //12
         robot.markerDown();
-        robot.liftDownAuto();
+        //robot.liftDownAuto();
     }
 
 
@@ -256,16 +260,16 @@ public class AutoDepotLand extends LinearOpMode{
     {
         //Place marker by extending over minerals and dropping markers
         robot.shoulderUpFarAuto(500);
-        robot.Drive(0.35,5,4,"forward");
+        robot.Drive(0.35,10,4,"forward");//10
         robot.extendOutAuto(2400);
         robot.spinCollector("in");
         robot.shoulderDownFarAuto(400);
-        sleep(1250);
+        sleep(2000);
         robot.stopCollector();
-        robot.shoulderUpFarAuto(500);
+        robot.shoulderUpFarAuto(700);
         robot.extendInAuto(0);
-        robot.Drive(0.35,5,4,"backward");
-        robot.shoulderDownAuto(200);
+        robot.Drive(0.35,10,4,"backward");//14
+        robot.shoulderDownAuto(300);
 
     }
 

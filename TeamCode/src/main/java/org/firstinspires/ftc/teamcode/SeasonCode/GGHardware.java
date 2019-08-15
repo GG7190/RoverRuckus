@@ -59,7 +59,7 @@ public class GGHardware {
     public final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";
     public final String LABEL_GOLD_MINERAL = "Gold Mineral";
     public final String LABEL_SILVER_MINERAL = "Silver Mineral";
-    public final int hangLiftUp = -10700;
+    public final int hangLiftUp = -8300;
     public int targetHigh, targetLow, target;
     public int upDownAction = 0;
     public double Pk = 0.002;
@@ -163,13 +163,13 @@ public class GGHardware {
     }
 
     public double getEncoderValues() {
-        double fREncoder = Math.abs(frontRight.getCurrentPosition());
-        double fLEncoder = Math.abs(frontLeft.getCurrentPosition());
+        //double fREncoder = Math.abs(frontRight.getCurrentPosition());
+        //double fLEncoder = Math.abs(frontLeft.getCurrentPosition());
         double bREncoder = Math.abs(backRight.getCurrentPosition());
-        double bLEncoder = Math.abs(frontRight.getCurrentPosition());
+        //double bLEncoder = Math.abs(frontRight.getCurrentPosition());
 
-        averageEncoderValue = (fREncoder + fLEncoder + bREncoder + bLEncoder) / 4;
-        return averageEncoderValue;
+        averageEncoderValue = ( bREncoder) / 4;
+        return bREncoder;
 
     }
 
